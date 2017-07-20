@@ -17,6 +17,6 @@ The most important methods are:
 Open(conn) - open a connection to a specific database and collection
 Close() - close a connection and mongod
 GetDataIter(condition, distinct) - get data iterator from the collection
-Store(sentry) - store an entry in the collection
+Store(entry) - store an entry in the collection
 Database.py takes care of booting up Mongo database and taking it offline as well as checking if a connection to a collection has been established.
 

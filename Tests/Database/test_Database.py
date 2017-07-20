@@ -12,21 +12,25 @@ class TestDatabase(object):
 		assert db.Open(conn) == True
 		assert db.mongoCollection != None
 		assert db.Close() == True
+		assert Database.mongod == None
 		
 	def test_RunMongodIfOffline(self):
 		db = Database()
 		assert db.RunMongodIfOffline() == True
 		assert db.Close() == True
+		assert Database.mongod == None
 		
 	def test_RunMongod(self):
 		db = Database()
 		assert db.RunMongod() == True
 		assert Database.mongod != None
 		assert db.Close() == True
+		assert Database.mongod == None
 		
 	def test_CheckConnArgs(self):
 		db = Database()
 		assert db.CheckConnArgs(conn) == True
+		assert Database.mongod == None
 		
 	def test_Close(self):
 		db = Database()
@@ -36,22 +40,26 @@ class TestDatabase(object):
 	def test_IsMongodRunningF(self):
 		db = Database()
 		assert db.IsMongodRunning() == False
+		assert Database.mongod == None
 	
 	def test_IsMongodRunningT(self):
 		db = Database()
 		assert db.RunMongod() == True
 		assert db.IsMongodRunning() == True
 		assert db.Close() == True
+		assert Database.mongod == None
 	
 	def test_IsConnOpenF(self):
 		db = Database()
 		assert db.IsConnOpen() == False
+		assert Database.mongod == None
 		
 	def test_IsConnOpenT(self):
 		db = Database()
 		assert db.Open(conn) == True
 		assert db.IsConnOpen() == True
 		assert db.Close() == True
+		assert Database.mongod == None
 		
 	def test_TerminateMongod(self):
 		db = Database()
@@ -64,6 +72,7 @@ class TestDatabase(object):
 		iter = db.GetDataIter(cond)
 		assert iter == False
 		assert db.Close() == True
+		assert Database.mongod == None
 		
 	def test_GetDataIterT(self):
 		db = Database()
@@ -72,6 +81,7 @@ class TestDatabase(object):
 		iter = db.GetDataIter(cond)
 		assert iter != False
 		assert db.Close() == True
+		assert Database.mongod == None
 		
 		
 		
