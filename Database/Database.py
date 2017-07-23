@@ -6,12 +6,13 @@ import DatabaseConfig
 
 class Database(object):
 	
-	mongod = None
+	mongod = False
 	
 	def __init__(self):	
-		self.mongoClient = None
-		self.mongoDatabase = None
-		self.mongoCollection = None
+		self.mongoClient = False
+		self.mongoDatabase = False
+		self.mongoCollection = False
+		print "Remember to use .Close() after you are finished using the database."
     
 	def Open(self, conn):
 		self.RunMongodIfOffline()
@@ -19,9 +20,64 @@ class Database(object):
 			self.Close()
 		self.CheckConnArgs(conn)
 		
-		self.mongoClient = pymongo.MongoClient()
+		self.mongoClient = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
 		self.mongoDatabase = self.mongoClient[conn['database']]
 		self.mongoCollection = self.mongoDatabase[conn['collection']]
+		return True
+		
+	def GetDataIter(self, condition, distinct=False):
+		if self.IsConnOpen():
+				try:
+					if distinct:
+						return self.mongoCollection.find(condition).distinct(distinct)
+					else:
+						return self.mongoCollection.find(condition)
+				except:
+					return False
+		else:
+			return False
+	
+	def Store(self, entry):
+		if self.IsConnOpen():
+			try:
+				self.mongoCollection.insert(entry)
+				return True
+			except:
+				return False
+		else:
+			return False
+			
+	def InspectDatabase(self):
+		self.RunMongodIfOffline()
+		client = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
+		
+		databaseNames = client.database_names()
+		
+		for name in databaseNames:
+			print 'Database ' + name + ':'
+			database = client[name]
+			collectionNames = database.collection_names()
+			
+			for name in collectionNames:
+				print '----- Collection ' + name + ':'
+				
+				collection = database[name]
+				print '     ----- Count documents: ',
+				print collection.count()
+				print '     ----- Document attributes: ',
+				print collection.find_one().keys()
+			print
+				
+		client.close()
+		return True
+		
+	def Close(self):
+		if self.IsConnOpen():
+			self.mongoClient.close()
+			self.mongoClient = False
+			self.mongoDatabase = False
+			self.mongoCollection = False
+		self.TerminateMongod()
 		return True
 	
 	def RunMongodIfOffline(self):
@@ -32,9 +88,9 @@ class Database(object):
 	def RunMongod(self):
 		if not self.IsMongodRunning():
 			try:
-				Database.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath])
+				Database.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath], stdout=subprocess.PIPE)
 			except:
-				raise Exception("Couldn't start the database! Database path is:" + dbPath + "Data path is:" + dataPath)
+				raise Exception("Couldn't start the database! Database path is:" + DatabaseConfig.dbPath + "Data path is:" + DatabaseConfig.dataPath)
 		return True
 	
 	def CheckConnArgs(self, conn):
@@ -62,53 +118,33 @@ class Database(object):
 			
 			client.close()
 		return True
-			
-	def Close(self):
-		if self.IsConnOpen():
-			self.mongoClient.close()
-			self.mongoClient = None
-			self.mongoDatabase = None
-			self.mongoCollection = None
-		self.TerminateMongod()
-		return True
-				
+							
 	def TerminateMongod(self):
 		if not self.IsMongodRunning():
 			return True
-		Database.mongod.terminate()
-		Database.mongod = None
+		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), DatabaseConfig.shellDatabase], stdin=subprocess.PIPE)
+		mongoShell.communicate(DatabaseConfig.shellCloseMongodCommand)
+		Database.mongod = False
 		return True
 		
-	def IsMongodRunning(self):
-		if Database.mongod == None:
-			return False
-		else:
-			return True
-
-	def GetDataIter(self, condition, distinct=False):
-		if self.IsConnOpen():
-				try:
-					if distinct:
-						return self.mongoCollection.find(condition).distinct(distinct)
-					else:
-						return self.mongoCollection.find(condition)
-				except:
-					return False
-		else:
-			return False
-	
-	def Store(self, entry):
-		if self.IsConnOpen():
+	def IsMongodRunning(self, strict=False):
+		if strict:
+			client = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port, connectTimeoutMS=2000, serverSelectionTimeoutMS=3000)
 			try:
-				self.mongoCollection.insert(entry)
+				client.admin.command('ismaster')
+				client.close()
 				return True
 			except:
+				client.close()
 				return False
 		else:
-			return False
+			if Database.mongod:
+				return True
+			else:
+				return False
 			
 	def IsConnOpen(self):
-		if self.mongoClient == None:
-			return False
-		else:
+		if self.mongoClient:
 			return True
+		else:
+			return False
