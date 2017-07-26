@@ -11,6 +11,8 @@ Real estate data is gathered from websites.
 Real estate data is stored in a database.
 Real estate data is deleted from the database after it has been analysed.
 Real estate data is analysed by constructing a model that can predict the price of an unknown real estate.
+Dataset value occurence is counted for each attribute.
+Dataset missing value occurence is counted for each attribute.
 Users' real estate is evaluated based on a model.
 Users specify information about their real estate through a graphical interface.
 

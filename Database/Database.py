@@ -1,7 +1,12 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath('../..'))
+
+from RealEstateValuationSystem.InputControl.InputController import InputController
+
 import pymongo
 import subprocess
 import os
-import types
 
 import DatabaseConfig
 
@@ -19,19 +24,19 @@ class Database(object):
 		print "Remember to use .Close() after you are finished using the database."
     
 	def InspectDatabase(self):
-		"""Turns on the database. Writes out the names of all databases, collections and document attributes
+		"""Turnspython on the database. Writes out the names of all databases, collections and document attributes
 		as well as the number of documents in a collection. Always returns True."""
 		self.RunMongodIfOffline()
 		client = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
 		
 		databaseNames = client.database_names()
 		for name in databaseNames:
-			print 'Database ' + name + ':'
+			print '\'database\' : ' + name
 			database = client[name]
 			
 			collectionNames = database.collection_names()
 			for name in collectionNames:
-				print '----- Collection ' + name + ':'
+				print '----- \'collection\' : ' + name
 				
 				collection = database[name]
 				print '     ----- Count documents: ',
@@ -44,12 +49,12 @@ class Database(object):
 		return True
 		
 	def Open(self, conn):
-		"""Turns on the database. Input is checked. Opens a connection to a MongoDB collection. Always
-		returns True."""
+		"""Turns on the database. Opens a connection to a MongoDB collection. Always returns True."""
+		self.CheckInputConn(conn)
+		
 		self.RunMongodIfOffline()
 		if self.IsConnOpen():
 			self.Close()
-		self.CheckInputConn(conn)
 		
 		self.mongoClient = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
 		self.mongoDatabase = self.mongoClient[conn['database']]
@@ -59,7 +64,7 @@ class Database(object):
 	def CheckInputConn(self, conn):
 		"""Checks if the input is correct. Closes the database and raises an exception if the input is
 		rejected, otherwise returns True."""
-		if not self.CheckInputTypeDict(conn):
+		if not InputController.IsDict(conn):
 			self.Close()
 			raise Exception("Cannot open connection because the paramater is not a dictionary")
 		if not self.IsKeyInDict('database', conn):
@@ -79,12 +84,6 @@ class Database(object):
 		if exists == None:
 			return False
 		return True
-	
-	def CheckInputTypeDict(self, param):
-		"""Checks if the paramater is a dictionary. Returns True if it is, False if it is not."""
-		if type(param) is types.DictType:
-			return True
-		return False
 		
 	def IsParamasInDatabase(self, dbName, collName):
 		"""Checks if the database and collection names are in the database. Closes the database and
@@ -142,7 +141,7 @@ class Database(object):
 	def IsMongodRunning(self, strict=False):
 		"""Checks input. Checks if the database is running. Passing strict=True makes the function attempt
 		to connect to the database. Returns True if the database is running, False if not."""
-		if not self.CheckInputTypeBool(strict):
+		if not InputController.IsBool(strict):
 			self.Close()
 			raise Exception("Strict is not a boolean value")
 			
@@ -162,10 +161,11 @@ class Database(object):
 				return False
 		
 	def GetDataIter(self, condition, distinct=False):
-		"""Get a data iterator which fetches documents from a collection which satisfy the condition.
+		"""Return a data iterator which fetches documents from a collection which satisfy the condition.
+		Documents have the follow the pattern: {u'key1' : [u'value1'], u'key2' : [value2], ...}.
 		If distinct=True it fetches unique documents. Returns the iterator or False if the connection
 		is close or if an error occured."""
-		if not self.CheckInputTypeBool(distinct):
+		if not InputController.IsBool(distinct):
 			self.Close()
 			raise Exception("Distinct is not a boolean value")
 		if self.IsConnOpen():
@@ -175,15 +175,11 @@ class Database(object):
 					else:
 						return self.mongoCollection.find(condition)
 				except:
+					print "Cannot execute .find() in mongoDB"
 					return False
 		else:
+			print "Connection is closed."
 			return False
-	
-	def CheckInputTypeBool(self, param):
-		"""Checks if the paramater is a boolean value. Returns True if it is, False if it is not."""
-		if type(param) is types.BooleanType:
-			return True
-		return False
 	
 	def Store(self, entry):
 		"""Store a new document into the database collection. Returns True if the document was stored

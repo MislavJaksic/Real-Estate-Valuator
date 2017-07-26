@@ -34,16 +34,6 @@ class TestDatabase(object):
 		dict = {'hello' : 55}
 		assert db.IsKeyInDict('hi', dict) == False
 		
-	def test_CheckInputTypeDictT(self):
-		db = Database()
-		dict = {}
-		assert db.CheckInputTypeDict(dict) == True
-		
-	def test_CheckInputTypeDictF(self):
-		db = Database()
-		number = 7
-		assert db.CheckInputTypeDict(number) == False
-		
 	def test_IsParamasInDatabaseT(self):
 		db = Database()
 		db.RunMongod()
