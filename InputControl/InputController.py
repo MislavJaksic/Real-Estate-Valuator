@@ -1,7 +1,6 @@
 import types
 
 class InputController(object):
-	
 	@staticmethod
 	def IsDict(param):
 		"""Checks if the paramater is a dictionary. Returns True if it is, False if it is not."""
@@ -22,3 +21,4 @@ class InputController(object):
 		if type(param) is types.ListType:
 			return True
 		return False
+		
