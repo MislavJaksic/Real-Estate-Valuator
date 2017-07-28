@@ -1,37 +1,31 @@
 from RealEstateValuationSystem.DataAnalysis.DatasetAnalyser import DatasetAnalyser
 
 class TestDatasetAnalyser(object):
-	def test_template(self):
-		pass
-	
 	def test_LoadData(self):
 		analyser = DatasetAnalyser()
 		assert analyser.LoadDataset() == True
 		
-	def test_ReplaceListsWithValuesInDictT(self):
+	def test_ExtractValueFromListInDictT(self):
 		analyser = DatasetAnalyser()
 		input = {'A' : [5], 'B' : [u'hi'], 'C' : None}
 		output = {'A' : 5, 'B' : u'hi', 'C' : None}
-		assert analyser.ReplaceListsWithValuesInDict(input) == output
+		assert analyser.ExtractValueFromListInDict(input) == output
 		
-	def test_ReplaceListsWithValuesInDictF(self):
-		analyser = DatasetAnalyser()
-		input = 'hello'
-		output = {}
-		assert analyser.ReplaceListsWithValuesInDict(input) == output
-		
-	def test_ReplaceNaNValuesWithNan(self):
+	def test_ReplaceNaNValuesWithNanT(self):
 		analyser = DatasetAnalyser()
 		assert analyser.LoadDataset() == True
 		assert analyser.ReplaceNaNValuesWithNan() == True
 		
-	def test_CountValues(self):
+	def test_CountValuesT(self):
 		analyser = DatasetAnalyser()
 		analyser.LoadDataset()
 		assert analyser.CountValues() == True
 		
-	def test_CountMissingValues(self):
+	def test_CountMissingValuesT(self):
 		analyser = DatasetAnalyser()
 		analyser.LoadDataset()
 		assert analyser.CountMissingValues() == True
+		
+	def test_DrawSomething(self):
+		pass
 		

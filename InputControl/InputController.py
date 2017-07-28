@@ -1,4 +1,5 @@
 import types
+import pandas
 
 class InputController(object):
 	@staticmethod
@@ -19,6 +20,13 @@ class InputController(object):
 	def IsList(param):
 		"""Checks if the paramater is a boolean value. Returns True if it is, False if it is not."""
 		if type(param) is types.ListType:
+			return True
+		return False
+		
+	@staticmethod
+	def IsDataFrame(param):
+		"""Checks if the paramater is a pandas DataFrame. Returns True if it is, False if it is not."""
+		if type(param) is type(pandas.DataFrame()):
 			return True
 		return False
 		

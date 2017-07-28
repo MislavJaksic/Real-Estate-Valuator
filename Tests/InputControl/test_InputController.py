@@ -13,3 +13,7 @@ class TestInputController(object):
 		list = []
 		assert InputController.IsList(list) == True
 		
+	def test_IsDataFrame(self):
+		list = []
+		assert InputController.IsDataFrame(list) == False
+		
