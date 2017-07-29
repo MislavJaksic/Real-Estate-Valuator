@@ -1,5 +1,5 @@
 from RealEstateValuationSystem.Database.Database import Database
-from RealEstateValuationSystem.Database.DatabaseConfig import conn
+conn = {'database' : 'test', 'collection' : 'restaurants'}
 
 class TestDatabase(object):
 	def test_template(self):
@@ -34,16 +34,11 @@ class TestDatabase(object):
 		dict = {'hello' : 55}
 		assert db.IsKeyInDict('hi', dict) == False
 		
-	def test_IsParamasInDatabaseT(self):
+	def test_IsParamsInDatabaseT(self):
 		db = Database()
 		db.RunMongod()
-		assert db.IsParamasInDatabase(conn['database'], conn['collection']) == True
+		assert db.IsParamsInDatabase(conn['database'], conn['collection']) == True
 		db.Close()
-		
-	def test_RunMongodIfOffline(self):
-		db = Database()
-		assert db.RunMongodIfOffline() == True
-		assert db.Close() == True
 		
 	def test_RunMongod(self):
 		db = Database()
@@ -59,7 +54,7 @@ class TestDatabase(object):
 	def test_ShutdownMongod(self):
 		db = Database()
 		assert db.ShutdownMongod() == True
-		assert db.RunMongodIfOffline() == True
+		assert db.RunMongod() == True
 		assert db.IsMongodRunning() == True
 		assert db.ShutdownMongod() == True
 		assert db.IsMongodRunning() == False

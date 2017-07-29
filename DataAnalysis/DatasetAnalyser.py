@@ -3,7 +3,6 @@ import os
 sys.path.insert(0, os.path.abspath('../..'))
 
 from RealEstateValuationSystem.Database.Database import Database
-from RealEstateValuationSystem.Database import DatabaseConfig
 from RealEstateValuationSystem.InputControl.InputController import InputController
 import DatasetConfig
 
@@ -21,7 +20,7 @@ class DatasetAnalyser(object):
 	def LoadDataset(self):
 		"""Load dataset into pandas DataFrame from the mongoDB collection. Always returns True."""
 		db = Database()
-		db.Open(DatabaseConfig.conn)
+		db.Open(DatasetConfig.conn)
 		
 		iter = db.GetDataIter({})
 		for doc in iter:
@@ -72,7 +71,8 @@ class DatasetAnalyser(object):
 		raises an exception."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
-			
+		
+		self.ReplaceNaNValuesWithNan()
 		nanSum = self.dataset.isnull().sum().sort_values(ascending=False)
 		nanCount = self.dataset.isnull().count()
 		nanPercent = (nanSum/nanCount).sort_values(ascending=False)
@@ -89,6 +89,8 @@ class DatasetAnalyser(object):
 		corrmat = self.dataset.corr()
 		f, ax = matplotlib.pyplot.subplots(figsize=(12, 9))
 		seaborn.heatmap(corrmat, square=True)
+		matplotlib.pyplot.xticks(rotation=90)
+		matplotlib.pyplot.yticks(rotation=0)
 		seaborn.plt.show()
 		return True
 		
@@ -142,7 +144,7 @@ class DatasetAnalyser(object):
 		seaborn.plt.show()
 		return True
 		
-	def DrawBoxGraphColumn(self, column):
+	def DrawBoxGraphColumn(self, column, sortByMedian=False):
 		"""Plots a box graph of a categorical column againt the .targetColumn. Returns True if
 		the operation has been completed successfully, otherwise it raises an exception."""
 		if not InputController.IsDataFrame(self.dataset):
@@ -150,7 +152,11 @@ class DatasetAnalyser(object):
 			
 		data = pandas.concat([self.dataset[DatasetConfig.target], self.dataset[column]], axis=1)
 		f, ax = matplotlib.pyplot.subplots(figsize=(8, 6))
-		fig = seaborn.boxplot(x=column, y=DatasetConfig.target, data=data)
+		if sortByMedian:
+			sortedIndexes = data.groupby([column]).median().sort_values([DatasetConfig.target]).index
+			fig = seaborn.boxplot(x=column, y=DatasetConfig.target, data=data, order=sortedIndexes)
+		else:
+			fig = seaborn.boxplot(x=column, y=DatasetConfig.target, data=data)
 		matplotlib.pyplot.xticks(rotation=90)
 		seaborn.plt.show()
 		return True

@@ -3,30 +3,31 @@ import os
 sys.path.insert(0, os.path.abspath('../..'))
 
 from RealEstateValuationSystem.InputControl.InputController import InputController
+import DatabaseConfig
 
 import pymongo
 import subprocess
 import os
 
-import DatabaseConfig
+
 
 class Database(object):
-	"""Data Access Object controls access to the database. Uses pymongo to access MongoDB.
-	Attributes: mongod is a process where the database is running.
-	            mongoClient, mongoDatabase, mongoCollection store information to which collection the user
-				is connected."""
+	"""Data Access Object. Uses pymongo to access MongoDB. Controls the mongod.exe process.
+	Attributes: mongod is a process in which mongod.exe is running.
+	            mongoClient, mongoDatabase, mongoCollection store information about the collection
+				to which the user is connected."""
 	mongod = False
 	
 	def __init__(self):	
 		self.mongoClient = False
 		self.mongoDatabase = False
 		self.mongoCollection = False
-		print "Remember to use .Close() after you are finished using the database."
+		print "Remember to use .Close() after you done using the database."
     
 	def InspectDatabase(self):
-		"""Turnspython on the database. Writes out the names of all databases, collections and document attributes
-		as well as the number of documents in a collection. Always returns True."""
-		self.RunMongodIfOffline()
+		"""Writes out the names of all mongo databases, collections, documents' attributes
+		and documents count. Always returns True."""
+		self.RunMongod()
 		client = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
 		
 		databaseNames = client.database_names()
@@ -49,10 +50,10 @@ class Database(object):
 		return True
 		
 	def Open(self, conn):
-		"""Turns on the database. Opens a connection to a MongoDB collection. Always returns True."""
+		"""Opens a new connection to a mongo collection. Always returns True."""
 		self.CheckInputConn(conn)
 		
-		self.RunMongodIfOffline()
+		self.RunMongod()
 		if self.IsConnOpen():
 			self.Close()
 		
@@ -62,32 +63,32 @@ class Database(object):
 		return True
 	
 	def CheckInputConn(self, conn):
-		"""Checks if the input is correct. Closes the database and raises an exception if the input is
-		rejected, otherwise returns True."""
+		"""Returns True if a Python dictionary follows the pattern {'database':'dbName', 'collection':'collName'},
+		otherwise closes the database and raises an exception."""
 		if not InputController.IsDict(conn):
 			self.Close()
-			raise Exception("Cannot open connection because the paramater is not a dictionary")
+			raise Exception("Cannot open connection because the paramater is not a dictionary.")
 		if not self.IsKeyInDict('database', conn):
 			self.Close()
-			raise Exception("Cannot open connection because the database name is missing")
+			raise Exception("Cannot open connection because the 'database' name is missing.")
 		if not self.IsKeyInDict('collection', conn):
 			self.Close()
-			raise Exception("Cannot open connection because the collection name is missing")
+			raise Exception("Cannot open connection because the 'collection' name is missing.")
 
 		if self.IsMongodRunning():
-			self.IsParamasInDatabase(conn['database'], conn['collection'])
+			self.IsParamsInDatabase(conn['database'], conn['collection'])
 		return True
 	
 	def IsKeyInDict(self, key, dict):
-		"""Checks if the key is in the dictionary. If it is, returns True, if not, returns False."""
+		"""If it is, returns True, if not, returns False."""
 		exists = dict.get(key)
 		if exists == None:
 			return False
 		return True
 		
-	def IsParamasInDatabase(self, dbName, collName):
-		"""Checks if the database and collection names are in the database. Closes the database and
-		raises an exception if the input is rejected, otherwise returns True."""
+	def IsParamsInDatabase(self, dbName, collName):
+		"""If mongo database and collection names are in the database, returns True, otherwise closes
+		the database and raises an exception."""
 		client = pymongo.MongoClient()
 		if not dbName in client.database_names():
 			self.Close()
@@ -100,15 +101,9 @@ class Database(object):
 		
 		client.close()
 		return True
-	
-	def RunMongodIfOffline(self):
-		"""A helper function."""
-		if not self.IsMongodRunning():
-			self.RunMongod()
-		return True
 		
 	def RunMongod(self):
-		"""Run mongo database process called mongod. If it cannot be run, raises an exception, otherwise
+		"""Runs database if it isn't running already. If it cannot be run, raises an exception, otherwise
 		return True."""
 		if not self.IsMongodRunning():
 			try:
@@ -118,8 +113,7 @@ class Database(object):
 		return True
 		
 	def Close(self):
-		"""Close the currect connection to the database if there is any and gently shuts down the mongoDB
-		process mongod. Always returns True."""
+		"""Closes an open connection and closes the database. Always returns True."""
 		if self.IsConnOpen():
 			self.mongoClient.close()
 			self.mongoClient = False
@@ -129,8 +123,7 @@ class Database(object):
 		return True
 		
 	def ShutdownMongod(self):
-		"""Closes the mongoDB process gently using mongo shell commands if there is something to shut down.
-		Always returns True."""
+		"""Closes the database. Always returns True."""
 		if not self.IsMongodRunning():
 			return True
 		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), DatabaseConfig.shellDatabase], stdin=subprocess.PIPE)
@@ -139,8 +132,8 @@ class Database(object):
 		return True
 		
 	def IsMongodRunning(self, strict=False):
-		"""Checks input. Checks if the database is running. Passing strict=True makes the function attempt
-		to connect to the database. Returns True if the database is running, False if not."""
+		"""Returns True if the database is running, False if not. If strict=True it will
+		try to connect to the database instead of just checking the class attribute."""
 		if not InputController.IsBool(strict):
 			self.Close()
 			raise Exception("Strict is not a boolean value")
@@ -161,10 +154,10 @@ class Database(object):
 				return False
 		
 	def GetDataIter(self, condition, distinct=False):
-		"""Return a data iterator which fetches documents from a collection which satisfy the condition.
-		Documents have the follow the pattern: {u'key1' : [u'value1'], u'key2' : [value2], ...}.
+		"""Return a data iterator which fetches documents from a mongo collection which satisfy the condition.
+		Fetched documents follow the pattern {u'key1' : [u'value1'], u'key2' : [value2], ...}.
 		If distinct=True it fetches unique documents. Returns the iterator or False if the connection
-		is close or if an error occured."""
+		is closed or if an error occured."""
 		if not InputController.IsBool(distinct):
 			self.Close()
 			raise Exception("Distinct is not a boolean value")
@@ -182,8 +175,8 @@ class Database(object):
 			return False
 	
 	def Store(self, entry):
-		"""Store a new document into the database collection. Returns True if the document was stored
-		or False if the connection is close or if an error occured."""
+		"""Store a new document into the database mongo collection. Returns True if the document was stored
+		or False if the connection is closed or if an error occured."""
 		if self.IsConnOpen():
 			try:
 				self.mongoCollection.insert(entry)
@@ -194,7 +187,8 @@ class Database(object):
 			return False
 			
 	def IsConnOpen(self):
-		"""Checks if the connection to a collection is open. If it is, returns True, otherwise it return False."""
+		"""Checks if the connection to a mongo collection is open. If it is, returns True,
+		otherwise it return False."""
 		if self.mongoClient:
 			return True
 		else:
