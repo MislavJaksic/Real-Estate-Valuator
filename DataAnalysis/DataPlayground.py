@@ -44,16 +44,20 @@ analyser.dataset['hasParking'] = numpy.where(analyser.dataset['numberOfParkingSp
 
 #analyser.DrawCorrelationMatrix()
 
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('korisnik'), 'sellerLink'] = 'K'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('agencija'), 'sellerLink'] = 'A'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('trgovina'), 'sellerLink'] = 'Tr'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('tvrtka'), 'sellerLink'] = 'Tv'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('investitor'), 'sellerLink'] = 'I'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('obrt'), 'sellerLink'] = 'Ob'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('webshop'), 'sellerLink'] = 'W'
-analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('oglasivac'), 'sellerLink'] = 'Og'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('korisnik'), 'sellerLink'] = 'K'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('agencija'), 'sellerLink'] = 'A'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('trgovina'), 'sellerLink'] = 'Tr'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('tvrtka'), 'sellerLink'] = 'Tv'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('investitor'), 'sellerLink'] = 'I'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('obrt'), 'sellerLink'] = 'Ob'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('webshop'), 'sellerLink'] = 'W'
+# analyser.dataset.loc[analyser.dataset['sellerLink'].str.contains('oglasivac'), 'sellerLink'] = 'Og'
 
-analyser.DrawBoxGraphColumn('sellerLink')
+analyser.dataset['sellerLink'] = numpy.where(analyser.dataset['sellerLink'].str.contains('korisnik') == True, 1, 2)
+
+analyser.DrawBoxGraphColumn('sellerLink', sortByMedian=True)
+
+analyser.DrawCorrelationMatrix()
 
 print analyser.dataset.columns.values
 print 'hello'

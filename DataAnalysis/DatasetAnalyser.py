@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../..'))
 
-from RealEstateValuationSystem.Database.Database import Database
+from RealEstateValuationSystem.DatabaseControl.DatabaseController import DatabaseController
 from RealEstateValuationSystem.InputControl.InputController import InputController
 import DatasetConfig
 
@@ -19,7 +19,7 @@ class DatasetAnalyser(object):
 	
 	def LoadDataset(self):
 		"""Load dataset into pandas DataFrame from the mongoDB collection. Always returns True."""
-		db = Database()
+		db = DatabaseController()
 		db.Open(DatasetConfig.conn)
 		
 		iter = db.GetDataIter({})

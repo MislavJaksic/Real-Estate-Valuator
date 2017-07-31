@@ -11,7 +11,7 @@ import os
 
 
 
-class Database(object):
+class DatabaseController(object):
 	"""Data Access Object. Uses pymongo to access MongoDB. Controls the mongod.exe process.
 	Attributes: mongod is a process in which mongod.exe is running.
 	            mongoClient, mongoDatabase, mongoCollection store information about the collection
@@ -107,7 +107,7 @@ class Database(object):
 		return True."""
 		if not self.IsMongodRunning():
 			try:
-				Database.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath], stdout=subprocess.PIPE)
+				DatabaseController.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath], stdout=subprocess.PIPE)
 			except:
 				raise Exception("Couldn't start the database! Database path is:" + DatabaseConfig.dbPath + "Data path is:" + DatabaseConfig.dataPath)
 		return True
@@ -128,7 +128,7 @@ class Database(object):
 			return True
 		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), DatabaseConfig.shellDatabase], stdin=subprocess.PIPE)
 		mongoShell.communicate(DatabaseConfig.shellCloseMongodCommand)
-		Database.mongod = False
+		DatabaseController.mongod = False
 		return True
 		
 	def IsMongodRunning(self, strict=False):
@@ -148,7 +148,7 @@ class Database(object):
 				client.close()
 				return False
 		else:
-			if Database.mongod:
+			if DatabaseController.mongod:
 				return True
 			else:
 				return False

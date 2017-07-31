@@ -1,6 +1,7 @@
 #Dataset source: MongoDB
 #Python dictionary {'database':'dbName', 'collection':'collName'}
 conn = {'database':'NjuskaloRealEstateAds', 'collection':'ApartmentForSaleCollection'}
+
 #Target is the column that will be predicted
 #Used by DatasetAnalyser to draw box and scatter graphs
 target = u'priceInEuros'
