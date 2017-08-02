@@ -17,10 +17,10 @@ class DatasetAnalyser(object):
 	def __init__(self):
 		self.dataset = []
 	
-	def LoadDataset(self):
+	def LoadDataset(self, conn):
 		"""Load dataset into pandas DataFrame from the mongoDB collection. Always returns True."""
 		db = DatabaseController()
-		db.Open(DatasetConfig.conn)
+		db.Open(conn)
 		
 		iter = db.GetDataIter({})
 		for doc in iter:
@@ -42,42 +42,46 @@ class DatasetAnalyser(object):
 				dict[key] = dict[key][0]
 		return dict
 		
-	def ReplaceNaNValuesWithNan(self):
-		"""Replace values that have been declared NaN values with numpy.nan in the dataset. Returns True
-		if the operation has been completed successfully, otherwise it returns False."""
+	def ReplaceNaNValuesWithNan(self, nanValues):
+		"""Replace values in the dataset with numpy.nan values. Returns True if the operation has been
+		completed successfully, otherwise it raises an exception."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
+		if not InputController.IsList(nanValues):
+			raise Exception("nanValues should be a list")
 		
-		for value in DatasetConfig.nanValues:
+		for value in nanValues:
 			self.dataset = self.dataset.replace(value, numpy.nan)
 		return True
 		
 	def CountValues(self):
-		"""Counts the number of times a value has occured in a column. Outputs the count to a .csv file.
+		"""Counts the number of times a value occures in a column. Outputs the count to a .csv file.
 		Returns True if the operation has been completed successfully, otherwise it raises an exception."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
 		
-		for column in self.dataset:
-			if column in DatasetConfig.ignoredColumns:
+		savePath = os.path.abspath(__file__) + 'CountValues.csv'
+		for columnName in self.dataset:
+			if columnName in DatasetConfig.dontCountColumns:
 				continue
-			count = self.dataset[column].value_counts()
-			count.to_csv('CountValues.csv', encoding='utf-8', mode='a', header=column)
+			valueCount = self.dataset[columnName].value_counts()
+			valueCount.to_csv(savePath, encoding='utf-8', mode='a', header=columnName)
 		return True
 		
 	def CountMissingValues(self):
-		"""Counts the number of times a missing value has occured in a column. Outputs the count to
-		a .csv file. Returns True if the operation has been completed successfully, otherwise it
-		raises an exception."""
+		"""Counts the number of times a missing value has occured in a column. Outputs the count and
+		percentage to a .csv file. Returns True if the operation has been completed successfully,
+		otherwise it raises an exception."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
 		
-		self.ReplaceNaNValuesWithNan()
 		nanSum = self.dataset.isnull().sum().sort_values(ascending=False)
 		nanCount = self.dataset.isnull().count()
 		nanPercent = (nanSum/nanCount).sort_values(ascending=False)
-		nanData = pandas.concat([nanSum, nanPercent], axis=1, keys=['nanSum', 'nanPercent'])
-		nanData.to_csv('MissingValues.csv')
+		nanData = pandas.concat([nanSum, nanPercent], axis=1, keys=['nanCount', 'nanPercent'])
+		
+		savePath = os.path.abspath(__file__) + 'MissingValues.csv'
+		nanData.to_csv(savePath)
 		return True
 		
 	def DrawCorrelationMatrix(self):
@@ -162,29 +166,36 @@ class DatasetAnalyser(object):
 		return True
 		
 	def LogTrans(self, column):
-		"""Applies a logarithm to all values in a column. Use to create normality when the skewness
-		is positive (leaning towards left)."""
+		"""Applies a netural (e) logarithm to all values in a column. Use to create normality when the
+		skewness is positive (leaning towards left)."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
 			
 		self.dataset[column] = numpy.log1p(self.dataset[column])
 		return True
 		
-	def DropColumns(self):
-		"""Drops .dropColumns from the dataset. Use either when there is a lot of missing data or
+	def DropColumns(self, columns):
+		"""Drops columns from the dataset. Use either when there is a lot of missing data or
 		the data is irrelevant."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
+		if not InputController.IsList(columns):
+			raise Exception("columns should be a list")
 		
-		self.dataset = self.dataset.drop(DatasetConfig.dropColumns, axis=1)
+		self.dataset = self.dataset.drop(columns, axis=1)
 		return True
 		
 	def KeepRows(self, condition):
-		"""Actually used to drop outliers, rows with extreme values or mistakes. Condition has to be a string
-		such as 'a > b' as it will then be transplated into (d[a] > d[b])."""
+		"""Used for eliminating outliers, rows with extreme values or mistakes. Condition has to be a string
+		such as 'a > b' as it will then be translated into (d[a] > d[b])."""
 		if not InputController.IsDataFrame(self.dataset):
 			raise Exception("Dataset has not been loaded. Load it using .LoadDataset()")
 			
 		self.dataset = self.dataset.query(condition)
+		return True
+		
+	def ReplaceValueWithValueInColumn(self, value, replacementValue, column):
+		
+		self.dataset.loc[self.dataset[column] == value, column] = replacementValue
 		return True
 		

@@ -1,9 +1,10 @@
 from RealEstateValuationSystem.DataAnalysis.DatasetAnalyser import DatasetAnalyser
+from RealEstateValuationSystem.DataAnalysis import DatasetConfig
 
 class TestDatasetAnalyser(object):
 	def test_LoadData(self):
 		analyser = DatasetAnalyser()
-		assert analyser.LoadDataset() == True
+		assert analyser.LoadDataset(DatasetConfig.conn) == True
 		
 	def test_ExtractValueFromListInDictT(self):
 		analyser = DatasetAnalyser()
@@ -13,17 +14,17 @@ class TestDatasetAnalyser(object):
 		
 	def test_ReplaceNaNValuesWithNanT(self):
 		analyser = DatasetAnalyser()
-		assert analyser.LoadDataset() == True
-		assert analyser.ReplaceNaNValuesWithNan() == True
+		analyser.LoadDataset(DatasetConfig.conn)
+		assert analyser.ReplaceNaNValuesWithNan(DatasetConfig.nanValues) == True
 		
 	def test_CountValuesT(self):
 		analyser = DatasetAnalyser()
-		analyser.LoadDataset()
+		analyser.LoadDataset(DatasetConfig.conn)
 		assert analyser.CountValues() == True
 		
 	def test_CountMissingValuesT(self):
 		analyser = DatasetAnalyser()
-		analyser.LoadDataset()
+		analyser.LoadDataset(DatasetConfig.conn)
 		assert analyser.CountMissingValues() == True
 		
 	def test_DrawSomething(self):
