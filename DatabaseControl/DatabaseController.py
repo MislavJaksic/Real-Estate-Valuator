@@ -158,9 +158,6 @@ class DatabaseController(object):
 		Fetched documents follow the pattern {u'key1' : [u'value1'], u'key2' : [value2], ...}.
 		If distinct=True it fetches unique documents. Returns the iterator or False if the connection
 		is closed or if an error occured."""
-		if not InputController.IsBool(distinct):
-			self.Close()
-			raise Exception("Distinct is not a boolean value")
 		if self.IsConnOpen():
 				try:
 					if distinct:

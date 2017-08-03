@@ -1,5 +1,5 @@
 Name: ApartmentForSaleCollection
-Source: http://www.njuskalo.hr/, advertisements website, scraped in August 2016
+Source: http://www.njuskalo.hr/, advertisements website, scraped in August 2017
 Description: 9162 observations, missing data is represented by the number zero
 Created by: Mislav Jaksic, jaksicmislav@gmail.com
 

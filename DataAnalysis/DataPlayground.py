@@ -1,57 +1,49 @@
-from DatasetAnalyser import DatasetAnalyser
+from DatasetTransformer import DatasetTransformer
+import GraphPainter
 import DatasetConfig
+import DatasetLoader
 
-import DatasetConfig
 import numpy
 import pandas
 
-analyser = DatasetAnalyser()
-analyser.LoadDataset(DatasetConfig.conn)
+def MakeTransformationsForApartmentForSaleCollection(transformer):
+	transformer.KeepRows('size < 450') #larger are outliers
+	transformer.KeepRows('priceInEuros > 5000') #smaller prices are trying to manipulate rankings
 
-analyser.KeepRows('size < 450') #larger are outliers
-analyser.KeepRows('priceInEuros > 5000') #smaller prices are trying to manipulate rankings
-#analyser.DrawScatterGraphColumn('size')
+	#careful! .loc cannot compare strings!!!
 
-#careful! .loc cannot compare strings!!!
+	floor = transformer.dataset['floor']
+	transformer.dataset.loc[floor == 'Suteren', 'floor'] = 1
+	transformer.dataset.loc[floor == 'Penthouse', 'floor'] = 3
+	transformer.dataset.loc[(floor != 1) & (floor != 3), 'floor'] = 2
+	transformer.dataset = transformer.dataset.astype({'floor' : int})
 
-floor = analyser.dataset['floor']
-analyser.dataset.loc[floor == 'Suteren', 'floor'] = 1
-analyser.dataset.loc[floor == 'Penthouse', 'floor'] = 3
-analyser.dataset.loc[(floor != 1) & (floor != 3), 'floor'] = 2
-analyser.dataset = analyser.dataset.astype({'floor' : int})
-#analyser.DrawBoxGraphColumn('floor')
+	cargoEle = transformer.dataset['hasCargoElevator']
+	transformer.dataset.loc[cargoEle > 0, 'hasCargoElevator'] = 1
+	transformer.dataset = transformer.dataset.astype({'hasCargoElevator' : int})
 
-cargoEle = analyser.dataset['hasCargoElevator']
-analyser.dataset.loc[cargoEle > 0, 'hasCargoElevator'] = 1
-analyser.dataset = analyser.dataset.astype({'hasCargoElevator' : int})
-#analyser.DrawBoxGraphColumn('hasCargoElevator')
+	#transform place !!! !!! !!!
+	
+	parking = transformer.dataset['numberOfParkingSpaces']
+	transformer.dataset = transformer.dataset.replace({'numberOfParkingSpaces' : {0 : 'none',
+																			1 : 'some', 2 : 'some', 3 : 'some', 4 : 'some', 5 : 'some',
+																			6 : 'lot', 7 : 'lot'}})
+	transformer.dataset = transformer.dataset.replace({'numberOfParkingSpaces' : {'lot' : 1,
+																			'none' : 2,
+																			'some' : 2}})
 
-#transform place !!! !!! !!!
+	transformer.LogTransOnColumn('priceInEuros')
+	transformer.LogTransOnColumn('size')
 
-#analyser.DrawBoxGraphColumn('numberOfParkingSpaces')
-parking = analyser.dataset['numberOfParkingSpaces']
-analyser.dataset = analyser.dataset.replace({'numberOfParkingSpaces' : {0 : 'none',
-                                                                        1 : 'some', 2 : 'some', 3 : 'some', 4 : 'some', 5 : 'some',
-																		6 : 'lot', 7 : 'lot'}})
-analyser.dataset = analyser.dataset.replace({'numberOfParkingSpaces' : {'lot' : 1,
-                                                                        'none' : 2,
-																		'some' : 2}})
-#analyser.DrawBoxGraphColumn('numberOfParkingSpaces')
+	transformer.dataset['sellerLink'] = numpy.where(transformer.dataset['sellerLink'].str.contains('korisnik') == True, 1, 2)
 
-#analyser.DrawBoxGraphColumn('yearOfConstruction')
-#analyser.DrawBoxGraphColumn('yearOfLastAdaptation')
+	transformer.DropColumns(DatasetConfig.dropColumns)
+	
+	transformer.InspectDataset()
+	
+	return transformer
 
-analyser.LogTrans('priceInEuros')
-analyser.LogTrans('size')
-#analyser.DrawDistributionGraphColumn('priceInEuros')
-#analyser.DrawDistributionGraphColumn('size')
 
-analyser.dataset['sellerLink'] = numpy.where(analyser.dataset['sellerLink'].str.contains('korisnik') == True, 1, 2)
-
-analyser.DropColumns(DatasetConfig.dropColumns)
-
-print analyser.dataset.columns.values
-print analyser.dataset.describe()
-print analyser.dataset.head()
-print analyser.dataset.dtypes
-analyser.DrawCorrelationMatrix()
+dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
+transformer = DatasetTransformer(dataset)
+MakeTransformationsForApartmentForSaleCollection(transformer)

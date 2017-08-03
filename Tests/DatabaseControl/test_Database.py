@@ -2,9 +2,6 @@ from RealEstateValuationSystem.DatabaseControl.DatabaseController import Databas
 conn = {'database' : 'test', 'collection' : 'restaurants'}
 
 class TestDatabase(object):
-	def test_template(self):
-		pass
-	
 	def test_create_Database(self):
 		db = DatabaseController()
 		assert db.mongoClient == False
