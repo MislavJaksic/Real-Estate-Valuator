@@ -1,10 +1,6 @@
-from DatasetTransformer import DatasetTransformer
-import GraphPainter
 import DatasetConfig
-import DatasetLoader
 
 import numpy
-import pandas
 
 def MakeTransformationsForApartmentForSaleCollection(transformer):
 	transformer.KeepRows('size < 450') #larger are outliers
@@ -18,9 +14,9 @@ def MakeTransformationsForApartmentForSaleCollection(transformer):
 	transformer.dataset.loc[(floor != 1) & (floor != 3), 'floor'] = 2
 	transformer.dataset = transformer.dataset.astype({'floor' : int})
 
-	cargoEle = transformer.dataset['hasCargoElevator']
-	transformer.dataset.loc[cargoEle > 0, 'hasCargoElevator'] = 1
-	transformer.dataset = transformer.dataset.astype({'hasCargoElevator' : int})
+	#cargoEle = transformer.dataset['hasCargoElevator']
+	#transformer.dataset.loc[cargoEle > 0, 'hasCargoElevator'] = 1
+	#transformer.dataset = transformer.dataset.astype({'hasCargoElevator' : int})
 
 	#transform place !!! !!! !!!
 	
@@ -36,14 +32,8 @@ def MakeTransformationsForApartmentForSaleCollection(transformer):
 	transformer.LogTransOnColumn('size')
 
 	transformer.dataset['sellerLink'] = numpy.where(transformer.dataset['sellerLink'].str.contains('korisnik') == True, 1, 2)
-
-	transformer.DropColumns(DatasetConfig.dropColumns)
 	
-	transformer.InspectDataset()
+	#transformer.InspectDataset()
 	
 	return transformer
-
-
-dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
-transformer = DatasetTransformer(dataset)
-MakeTransformationsForApartmentForSaleCollection(transformer)
+	

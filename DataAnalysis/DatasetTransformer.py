@@ -2,9 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../..'))
 
-from RealEstateValuationSystem.DatabaseControl.DatabaseController import DatabaseController
 from RealEstateValuationSystem.InputControl.InputController import InputController
-import DatasetConfig
 
 import pandas
 import numpy

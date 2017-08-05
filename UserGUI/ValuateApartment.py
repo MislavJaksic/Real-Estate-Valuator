@@ -18,10 +18,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 from RealEstateValuationSystem.DatabaseControl.DatabaseController import DatabaseController
 from RealEstateValuationSystem.DataAnalysis import DatasetConfig
+from RealEstateValuationSystem.Predicting import Predictor
 
 import re
 
-inputLabels = ['state', 'town', 'place', 'size', 'yearOfConstruction', 'yearOfLastAdaptation', 'numberOfRooms', 'floor', 'numberOfParkingSpaces']
+inputLabels = ['state', 'town', 'place', 'size', 'floor', 'numberOfParkingSpaces']
 
 checkBoxes = [
 "onlyReliableHouses?", "anotherOption",
@@ -135,7 +136,8 @@ class ValuateApartment(QMainWindow):
 				customerData[inputLabels[i]] = [int(self.allInputDropdownMenus[i].currentText())]
 			except:
 				customerData[inputLabels[i]] = [self.allInputDropdownMenus[i].currentText()]
-		price = PredictApartmentPrice(customerData)
+		print customerData
+		price = Predictor.PredictIntervalValue(customerData)
 		self.allOutputLabels[0].setText(self.allOutputLabels[0].text() + str(price[0]))
 	
 	def CreateOutputLabels(self):

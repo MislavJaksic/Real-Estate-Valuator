@@ -15,7 +15,7 @@ dontCountColumns = [u'_id', u'adCode', u'adLink', u'adPublishedDate', u'objectCo
 binaryColumns = [u'hasCargoElevator', u'hasElevator', u'isNewlyBuilt']
 #Columns that should be dropped from the dataset
 #Used by DatasetAnalyser to mass eliminate columns from the dataset
-dropColumns = [u'energyCertificate', u'hasCargoElevator', u'hasElevator', u'isNewlyBuilt', u'numberOfRooms', u'state', u'town',
+dropColumns = [u'energyCertificate', u'hasCargoElevator', u'hasElevator', u'isNewlyBuilt', u'numberOfRooms', u'state',
                u'type', u'sizeOfBalcony', u'sizeOfGarden', u'sizeOfTerrace', u'yearOfConstruction',
 			   u'yearOfLastAdaptation', u'_id', u'adCode', u'adLink', u'adPublishedDate', u'objectCode']
 
