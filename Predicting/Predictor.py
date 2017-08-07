@@ -16,43 +16,54 @@ import pandas
 
 
 def PredictIntervalValue(customerApartment):
-	dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
+	#print customerApartment
+	#print dataset.tail()
 	
-	#insert dummy data to prevent it from being dropped or being incomplete
+	#insert faux data to prevent it from being dropped or being incomplete
 	customerApartment['priceInEuros'] = [100000]
 	customerApartment['sellerLink'] = [u'/korisnik/']
-	print customerApartment
-	print dataset.tail()
 	cutomerApartmentPandas = pandas.DataFrame(customerApartment)
+	
+	dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
 	dataset = pandas.concat([dataset, cutomerApartmentPandas], ignore_index=True)
-	print dataset.tail()
+	#print dataset.tail()
 	
 	transformer = DatasetTransformer(dataset)
 	transformer.DropColumns(DatasetConfig.dropColumns)
 	
 	TransformationScripts.MakeTransformationsForApartmentForSaleCollection(transformer)
 	
-	print transformer.dataset.tail()
+	#print transformer.dataset.tail()
+	print "Number of apartments in the same place:"
+	print transformer.dataset['place'][transformer.dataset.place == customerApartment['place'][0]].count()
+	print "Number of apartments in the same town:"
+	print transformer.dataset['town'][transformer.dataset.place == customerApartment['town'][0]].count()
 	
 	Y = transformer.dataset['priceInEuros']
 	transformer.DropColumns(['priceInEuros', 'place', 'town'])
 	X = transformer.dataset
 	#pd.get_dummies(XMod)
 	
-	customerApartment = X[:-1]
-	X = X[-1:]
+	customerApartment = X[-1:]
+	X = X[:-1]
+	Y = Y[:-1]
 	
+	print "Customer data:"
 	print customerApartment
-	print X
+	print "X:"
+	print X.tail()
+	print "Y:"
+	print Y.tail()
 	
 	model = GridSearchCV(GradientBoostingRegressor(), scoring='neg_mean_squared_error',
 	                     param_grid={'loss' :('ls', 'huber'), 'learning_rate' : numpy.arange(0.05, 0.21, 0.05),
 						 'n_estimators' : range(70, 111, 10), 'max_depth' : range(2, 4, 1)})
 	#print dataset.head()
 	#print dataset.tail()
-	exit()			 
-	model.fit(X, Y)
 	
+	model.fit(X, Y)
+	print "Predicted interval value:"
+	print model.predict(customerApartment)
 	print "!!!-.-.-!!!"
 	#print model.cv_results_ #too long to print
 	print model.best_estimator_
@@ -62,4 +73,4 @@ def PredictIntervalValue(customerApartment):
 	print model.scorer_
 	print model.n_splits_
 	
-		
+PredictIntervalValue({'town': [u'Brezovica'], 'numberOfParkingSpaces': [0], 'floor': [1], 'state': [u'Grad Zagreb'], 'place': [u'Brezovica'], 'size': [80]})
