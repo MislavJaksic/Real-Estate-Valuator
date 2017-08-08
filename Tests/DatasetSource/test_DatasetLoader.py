@@ -1,9 +1,9 @@
-from RealEstateValuationSystem.DataAnalysis import DatasetLoader
+from RealEstateValuationSystem.DatasetSource import DatasetLoader
 from RealEstateValuationSystem.InputControl.InputController import InputController
-from RealEstateValuationSystem.DataAnalysis import DatasetConfig
+conn = {'database' : 'test', 'collection' : 'restaurants'}
 
 def test_FromMongoDB():
-	dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
+	dataset = DatasetLoader.LoadFromMongoDB(conn)
 	assert (True == InputController.IsDataFrame(dataset))
 	
 def test_ExtractValueFromListInDict():
