@@ -1,4 +1,4 @@
-from RealEstateValuationSystem.DatabaseControl.DatabaseController import DatabaseController
+from RealEstateValuationSystem.DatasetSource.Database.DatabaseController import DatabaseController
 conn = {'database' : 'test', 'collection' : 'restaurants'}
 
 class TestDatabase(object):
