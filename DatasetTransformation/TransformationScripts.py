@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('..'))
 
-from DataAnalysis.ApartmentForSaleCollectionimport import DatasetConfig
+from DataAnalysis.ApartmentForSaleCollection import DatasetConfig
 
 import numpy
 
