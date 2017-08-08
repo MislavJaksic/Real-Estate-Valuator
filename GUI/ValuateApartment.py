@@ -17,7 +17,7 @@ import os
 sys.path.insert(0, os.path.abspath('..'))
 
 from DatasetSource.Database.DatabaseController import DatabaseController
-from DataAnalysis import DatasetConfig
+from DataAnalysis.ApartmentForSaleCollection import DatasetConfig
 from Predicting import Predictor
 
 import re
