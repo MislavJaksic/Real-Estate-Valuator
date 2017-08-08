@@ -1,6 +1,6 @@
-from RealEstateValuationSystem.DataAnalysis import DatasetLoader
-from RealEstateValuationSystem.DataAnalysis import DatasetConfig
-from RealEstateValuationSystem.DataAnalysis import Counter
+from RealEstateValuationSystem.DatasetSource import DatasetLoader
+from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollection import DatasetConfig
+from RealEstateValuationSystem.DatasetAnalysis import Counter
 
 import pytest
 
