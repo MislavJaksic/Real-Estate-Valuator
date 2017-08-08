@@ -1,4 +1,8 @@
-import DatasetConfig
+import sys
+import os
+sys.path.insert(0, os.path.abspath('..'))
+
+from DataAnalysis.ApartmentForSaleCollectionimport import DatasetConfig
 
 import numpy
 
@@ -32,8 +36,6 @@ def MakeTransformationsForApartmentForSaleCollection(transformer):
 	transformer.LogTransOnColumn('size')
 
 	transformer.dataset['sellerLink'] = numpy.where(transformer.dataset['sellerLink'].str.contains('korisnik') == True, 1, 2)
-	
-	#transformer.InspectDataset()
 	
 	return transformer
 	

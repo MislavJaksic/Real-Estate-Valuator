@@ -1,11 +1,11 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('..'))
 
-from RealEstateValuationSystem.DataAnalysis import DatasetConfig
-from RealEstateValuationSystem.DataAnalysis.DatasetTransformer import DatasetTransformer
-from RealEstateValuationSystem.DataAnalysis import DatasetLoader
-from RealEstateValuationSystem.DataAnalysis import TransformationScripts
+from DatasetAnalysis.ApartmentForSaleCollectionimport import DatasetConfig
+from DatasetTransformation.DatasetTransformer import DatasetTransformer
+from DatasetSource import DatasetLoader
+from DatasetTransformation import TransformationScripts
 
 from sklearn.linear_model import LinearRegression, ElasticNet, ElasticNetCV
 from sklearn.model_selection import GridSearchCV
@@ -35,9 +35,18 @@ def PredictIntervalValue(customerApartment):
 	
 	#print transformer.dataset.tail()
 	print "Number of apartments in the same place:"
-	print transformer.dataset['place'][transformer.dataset.place == customerApartment['place'][0]].count()
-	print "Number of apartments in the same town:"
-	print transformer.dataset['town'][transformer.dataset.place == customerApartment['town'][0]].count()
+	countPlace = transformer.dataset['place'][transformer.dataset.place == customerApartment['place'][0]].count()
+	if countPlace > 200:
+		transformer.KeepRows('place == ' + "'" + customerApartment['place'][0] + "'")
+	else:
+		print "Number of apartments in the same town:"
+		countTown = transformer.dataset['town'][transformer.dataset.place == customerApartment['town'][0]].count()
+		if countTown > 200:
+			transformer.KeepRows('town == ' + "'" + customerApartment['town'][0] + "'")
+		else:
+			raise Exception("Not enough data!")
+			
+	
 	
 	Y = transformer.dataset['priceInEuros']
 	transformer.DropColumns(['priceInEuros', 'place', 'town'])
@@ -73,4 +82,5 @@ def PredictIntervalValue(customerApartment):
 	print model.scorer_
 	print model.n_splits_
 	
-PredictIntervalValue({'town': [u'Brezovica'], 'numberOfParkingSpaces': [0], 'floor': [1], 'state': [u'Grad Zagreb'], 'place': [u'Brezovica'], 'size': [80]})
+#PredictIntervalValue({'town': [u'Brezovica'], 'numberOfParkingSpaces': [0], 'floor': [1], 'state': [u'Grad Zagreb'], 'place': [u'Brezovica'], 'size': [80]})
+PredictIntervalValue({'town': [u'Donji Grad'], 'numberOfParkingSpaces': [1], 'floor': [7], 'state': [u'Grad Zagreb'], 'place': [u'Donji grad'], 'size': [30]})

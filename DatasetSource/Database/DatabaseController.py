@@ -2,14 +2,12 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../..'))
 
-from RealEstateValuationSystem.InputControl.InputController import InputController
+from InputControl.InputController import InputController
 import DatabaseConfig
 
 import pymongo
 import subprocess
 import os
-
-
 
 class DatabaseController(object):
 	"""Data Access Object. Uses pymongo to access MongoDB. Controls the mongod.exe process.
@@ -126,8 +124,8 @@ class DatabaseController(object):
 		"""Closes the database. Always returns True."""
 		if not self.IsMongodRunning():
 			return True
-		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), DatabaseConfig.shellDatabase], stdin=subprocess.PIPE)
-		mongoShell.communicate(DatabaseConfig.shellCloseMongodCommand)
+		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), r'admin'], stdin=subprocess.PIPE)
+		mongoShell.communicate(r'db.shutdownServer()')
 		DatabaseController.mongod = False
 		return True
 		
@@ -153,7 +151,7 @@ class DatabaseController(object):
 			else:
 				return False
 		
-	def GetDataIter(self, condition, distinct=False):
+	def Find(self, condition, distinct=False):
 		"""Return a data iterator which fetches documents from a mongo collection which satisfy the condition.
 		Fetched documents follow the pattern {u'key1' : [u'value1'], u'key2' : [value2], ...}.
 		If distinct=True it fetches unique documents. Returns the iterator or False if the connection
@@ -171,8 +169,8 @@ class DatabaseController(object):
 			print "Connection is closed."
 			return False
 	
-	def Store(self, entry):
-		"""Store a new document into the database mongo collection. Returns True if the document was stored
+	def Insert(self, entry):
+		"""Insert a new document into the database mongo collection. Returns True if the document was stored
 		or False if the connection is closed or if an error occured."""
 		if self.IsConnOpen():
 			try:

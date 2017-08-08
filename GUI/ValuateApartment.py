@@ -14,11 +14,11 @@ from PyQt5.QtWidgets import QFormLayout, QHBoxLayout, QVBoxLayout
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('..'))
 
-from RealEstateValuationSystem.DatabaseControl.DatabaseController import DatabaseController
-from RealEstateValuationSystem.DataAnalysis import DatasetConfig
-from RealEstateValuationSystem.Predicting import Predictor
+from DatasetSource.Database.DatabaseController import DatabaseController
+from DataAnalysis import DatasetConfig
+from Predicting import Predictor
 
 import re
 
@@ -77,7 +77,7 @@ class ValuateApartment(QMainWindow):
 			data = self.db.GetDataIter({'town':self.allInputDropdownMenus[1].currentText()}, distinct='place')
 			self.allInputDropdownMenus[1].currentIndexChanged[str].connect(self.Change_Place_DropdownMenu)
 		if name == 'size':
-			data = [str(number) for number in xrange(5, 500, 1)]
+			data = [str(number) for number in xrange(5, 449, 1)]
 		if name == 'yearOfConstruction':
 			data = [str(number) for number in xrange(1940, 2018, 1)]
 		if name == 'yearOfLastAdaptation':

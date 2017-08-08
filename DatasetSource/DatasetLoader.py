@@ -1,9 +1,9 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('..'))
 
-from RealEstateValuationSystem.DatabaseControl.DatabaseController import DatabaseController
-from RealEstateValuationSystem.InputControl.InputController import InputController
+from Database.DatabaseController import DatabaseController
+from InputControl.InputController import InputController
 
 import pandas
 
@@ -18,7 +18,7 @@ def LoadFromMongoDB(conn, condition={}):
 	db.Open(conn)
 	
 	dataset = []
-	iter = db.GetDataIter(condition)
+	iter = db.Find(condition)
 	for doc in iter:
 		doc = ExtractValueFromListInDict(doc)
 		dataset.append(doc)
