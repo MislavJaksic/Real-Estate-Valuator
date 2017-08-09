@@ -1,9 +1,9 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 from Database.DatabaseController import DatabaseController
-from InputControl.InputController import InputController
+from RealEstateValuationSystem.InputControl.InputController import InputController
 
 import pandas
 
@@ -35,7 +35,8 @@ def ExtractValueFromListInDict(dict):
 	
 	for key in dict.keys():
 		if InputController.IsList(dict[key]):
-			dict[key] = dict[key][0]
+			if dict[key] != []:
+				dict[key] = dict[key][0]
 	return dict
 	
 #def LoadFromCSV(filePath):

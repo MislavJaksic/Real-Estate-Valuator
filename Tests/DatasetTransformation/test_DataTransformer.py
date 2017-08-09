@@ -1,4 +1,4 @@
-from RealEstateValuationSystem.DataAnalysis.DatasetTransformer import DatasetTransformer
+from RealEstateValuationSystem.DatasetTransformation.DatasetTransformer import DatasetTransformer
 from RealEstateValuationSystem.DatasetSource import DatasetLoader
 from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollection import DatasetConfig
 

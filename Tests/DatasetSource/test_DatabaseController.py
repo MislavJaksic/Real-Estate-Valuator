@@ -76,18 +76,18 @@ class TestDatabase(object):
 		assert db.IsConnOpen() == True
 		assert db.Close() == True
 	
-	def test_GetDataIterF(self):
+	def test_FindF(self):
 		db = DatabaseController()
 		cond = {}
-		iter = db.GetDataIter(cond)
+		iter = db.Find(cond)
 		assert iter == False
 		assert db.Close() == True
 		
-	def test_GetDataIterT(self):
+	def test_FindT(self):
 		db = DatabaseController()
 		assert db.Open(conn) == True
 		cond = {}
-		iter = db.GetDataIter(cond)
+		iter = db.Find(cond)
 		assert iter != False
 		assert db.Close() == True
 		

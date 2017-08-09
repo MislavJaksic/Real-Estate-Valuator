@@ -1,11 +1,11 @@
 import sys
 import os
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
-from DatasetAnalysis.ApartmentForSaleCollectionimport import DatasetConfig
-from DatasetTransformation.DatasetTransformer import DatasetTransformer
-from DatasetSource import DatasetLoader
-from DatasetTransformation import TransformationScripts
+from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollectionimport import DatasetConfig
+from RealEstateValuationSystem.DatasetTransformation.DatasetTransformer import DatasetTransformer
+from RealEstateValuationSystem.DatasetSource import DatasetLoader
+from RealEstateValuationSystem.DatasetTransformation import TransformationScripts
 
 from sklearn.linear_model import LinearRegression, ElasticNet, ElasticNetCV
 from sklearn.model_selection import GridSearchCV

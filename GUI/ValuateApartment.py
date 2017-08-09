@@ -14,11 +14,11 @@ from PyQt5.QtWidgets import QFormLayout, QHBoxLayout, QVBoxLayout
 
 import sys
 import os
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
-from DatasetSource.Database.DatabaseController import DatabaseController
-from DataAnalysis.ApartmentForSaleCollection import DatasetConfig
-from Predicting import Predictor
+from RealEstateValuationSystem.DatasetSource.Database.DatabaseController import DatabaseController
+from RealEstateValuationSystem.DataAnalysis.ApartmentForSaleCollection import DatasetConfig
+from RealEstateValuationSystem.Predicting import Predictor
 
 import re
 

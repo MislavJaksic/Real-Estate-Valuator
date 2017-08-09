@@ -1,6 +1,6 @@
 from RealEstateValuationSystem.DatasetSource import DatasetLoader
 from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollection import DatasetConfig
-from RealEstateValuationSystem.DataAnalysis import GraphPainter
+from RealEstateValuationSystem.DatasetAnalysis import GraphPainter
 
 import pytest
 
