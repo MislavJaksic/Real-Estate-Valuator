@@ -17,7 +17,7 @@ import os
 sys.path.insert(0, os.path.abspath('../..'))
 
 from RealEstateValuationSystem.DatasetSource.Database.DatabaseController import DatabaseController
-from RealEstateValuationSystem.DataAnalysis.ApartmentForSaleCollection import DatasetConfig
+from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollection import DatasetConfig
 from RealEstateValuationSystem.Predicting import Predictor
 
 import re
@@ -69,12 +69,12 @@ class ValuateApartment(QMainWindow):
 	
 	def AddDataToDropdownMenu(self, menu, name):
 		if name == 'state':
-			data = self.db.GetDataIter({}, distinct='state')
+			data = self.db.Find({}, distinct='state')
 		if name == 'town':
-			data = self.db.GetDataIter({'state':self.allInputDropdownMenus[0].currentText()}, distinct='town')
+			data = self.db.Find({'state':self.allInputDropdownMenus[0].currentText()}, distinct='town')
 			self.allInputDropdownMenus[0].currentIndexChanged[str].connect(self.Change_Town_DropdownMenu)
 		if name == 'place':
-			data = self.db.GetDataIter({'town':self.allInputDropdownMenus[1].currentText()}, distinct='place')
+			data = self.db.Find({'town':self.allInputDropdownMenus[1].currentText()}, distinct='place')
 			self.allInputDropdownMenus[1].currentIndexChanged[str].connect(self.Change_Place_DropdownMenu)
 		if name == 'size':
 			data = [str(number) for number in xrange(5, 449, 1)]
@@ -83,9 +83,9 @@ class ValuateApartment(QMainWindow):
 		if name == 'yearOfLastAdaptation':
 			data = [str(number) for number in xrange(1940, 2018, 1)]
 		if name == 'numberOfRooms':
-			data = self.db.GetDataIter({}, distinct='numberOfRooms')
+			data = self.db.Find({}, distinct='numberOfRooms')
 		if name == 'floor':
-			data = self.db.GetDataIter({}, distinct='floor')
+			data = self.db.Find({}, distinct='floor')
 			data.remove(0)
 		if name == 'numberOfParkingSpaces':
 			data = [str(number) for number in xrange(0, 7, 1)]
@@ -96,7 +96,7 @@ class ValuateApartment(QMainWindow):
 	def Change_Town_DropdownMenu(self, selectedState):
 		db = DatabaseController()
 		db.Open(DatasetConfig.conn)
-		data = db.GetDataIter({'state' : selectedState}, distinct='town')
+		data = db.Find({'state' : selectedState}, distinct='town')
 		db.Close()
 		
 		NaturalSort(data)
@@ -107,7 +107,7 @@ class ValuateApartment(QMainWindow):
 	def Change_Place_DropdownMenu(self, selectedState):
 		db = DatabaseController()
 		db.Open(DatasetConfig.conn)
-		data = db.GetDataIter({'town' : selectedState}, distinct='place')
+		data = db.Find({'town' : selectedState}, distinct='place')
 		db.Close()
 		
 		NaturalSort(data)
