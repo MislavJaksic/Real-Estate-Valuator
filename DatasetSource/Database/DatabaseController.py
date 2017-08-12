@@ -10,28 +10,38 @@ import subprocess
 import os
 
 class DatabaseController(object):
-	"""Data Access Object. Uses pymongo to access MongoDB. Controls the mongod.exe process.
-	Attributes: mongod is a process in which mongod.exe is running.
-	            mongoClient, mongoDatabase, mongoCollection store information about the collection
-				to which the user is connected."""
+	"""Data Access Object.
+	Attributes: mongod stores a mongod.exe process. There can be only one.
+	            mongoClient stores an entry point to the database. There can be only one."""
 	mongod = False
+	mongoClient = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
+	                                  #maxIdleTimeMS=3000, socketTimeoutMS=3000, connectTimeoutMS=2000, serverSelectionTimeoutMS=3000, waitQueueTimeoutMS=3000
 	
-	def __init__(self):	
-		self.mongoClient = False
+	def __init__(self):
 		self.mongoDatabase = False
 		self.mongoCollection = False
-		print "Remember to use .Close() after you done using the database."
+		print "RunMongod(), Inspect(), Open(), Find(), FindDistinct(), Insert(), CloseAndStop()"
     
-	def InspectDatabase(self):
-		"""Writes out the names of all mongo databases, collections, documents' attributes
-		and documents count. Always returns True."""
-		self.RunMongod()
-		client = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
+	def RunMongod(self):
+		"""Run mongod if it isn't already running."""
+		if not self._IsMongodRunning():
+			try:
+				DatabaseController.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath],
+															 stdout=subprocess.PIPE)
+			except:
+				raise Exception("Couldn't start the database! Database path is:" + DatabaseConfig.dbPath + "Data path is:" + DatabaseConfig.dataPath)
+		return True
 		
-		databaseNames = client.database_names()
+	def Inspect(self):
+		"""Writes out the names of all mongo databases, collections, document attributes and count.
+		Always returns True."""
+		if not self._IsMongodRunning():
+			raise Exception("Mongod is not running")
+		
+		databaseNames = DatabaseController.mongoClient.database_names()
 		for name in databaseNames:
 			print '\'database\' : ' + name
-			database = client[name]
+			database = DatabaseController.mongoClient[name]
 			
 			collectionNames = database.collection_names()
 			for name in collectionNames:
@@ -44,148 +54,137 @@ class DatabaseController(object):
 				print collection.find_one().keys()
 			print
 				
-		client.close()
 		return True
 		
-	def Open(self, conn):
-		"""Opens a new connection to a mongo collection. Always returns True."""
-		self.CheckInputConn(conn)
+	def Open(self, coll):
+		"""Opens a mongo collection. Always returns True."""
+		if not self._IsMongodRunning():
+			raise Exception("Mongod is not running")
+		if not self._IsCollectionPath(coll):
+			self.CloseAndStop()
+			raise Exception("Given an incorrect path to the collection")
 		
-		self.RunMongod()
-		if self.IsConnOpen():
-			self.Close()
+		self._CloseCollection()
 		
-		self.mongoClient = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
-		self.mongoDatabase = self.mongoClient[conn['database']]
-		self.mongoCollection = self.mongoDatabase[conn['collection']]
+		self.mongoDatabase = DatabaseController.mongoClient[coll['database']]
+		self.mongoCollection = self.mongoDatabase[coll['collection']]
 		return True
-	
-	def CheckInputConn(self, conn):
-		"""Returns True if a Python dictionary follows the pattern {'database':'dbName', 'collection':'collName'},
-		otherwise closes the database and raises an exception."""
-		if not InputController.IsDict(conn):
-			self.Close()
-			raise Exception("Cannot open connection because the paramater is not a dictionary.")
-		if not self.IsKeyInDict('database', conn):
-			self.Close()
-			raise Exception("Cannot open connection because the 'database' name is missing.")
-		if not self.IsKeyInDict('collection', conn):
-			self.Close()
-			raise Exception("Cannot open connection because the 'collection' name is missing.")
-
-		if self.IsMongodRunning():
-			self.IsParamsInDatabase(conn['database'], conn['collection'])
+		
+	def _IsCollectionPath(self, coll):
+		"""Is a collection if {'database':'dbName', 'collection':'collName'}. """
+		if not InputController.IsDict(coll):
+			return False
+		if not self._IsKeyInDict('database', coll):
+			return False
+		if not self._IsKeyInDict('collection', coll):
+			return False
 		return True
-	
-	def IsKeyInDict(self, key, dict):
-		"""If it is, returns True, if not, returns False."""
+		
+	def _IsKeyInDict(self, key, dict):
+		"""Key is in dict if a vlue can be extracted."""
 		exists = dict.get(key)
 		if exists == None:
 			return False
 		return True
 		
-	def IsParamsInDatabase(self, dbName, collName):
-		"""If mongo database and collection names are in the database, returns True, otherwise closes
-		the database and raises an exception."""
-		client = pymongo.MongoClient()
-		if not dbName in client.database_names():
-			self.Close()
-			raise Exception("Database name " + dbName + " doesnt exist in the client")
-		
-		database = client[dbName]
-		if not collName in database.collection_names():
-			self.Close()
-			raise Exception("Collection name " + collName + " doesnt exist in the client")
-		
-		client.close()
-		return True
-		
-	def RunMongod(self):
-		"""Runs database if it isn't running already. If it cannot be run, raises an exception, otherwise
-		return True."""
-		if not self.IsMongodRunning():
+	def Find(self, condition):
+		"""Return a document iterator where documents are structures as
+		{u'key1' : [u'value1'], u'key2' : [value2], ...}. Condition is structured as
+		{'size' : {'$lt' : 500}}, {'priceInEuros' : {'$gt' : 5000}}."""
+		if self._IsCollectionOpen():
 			try:
-				DatabaseController.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath], stdout=subprocess.PIPE)
+				return self.mongoCollection.find(condition)
 			except:
-				raise Exception("Couldn't start the database! Database path is:" + DatabaseConfig.dbPath + "Data path is:" + DatabaseConfig.dataPath)
-		return True
-		
-	def Close(self):
-		"""Closes an open connection and closes the database. Always returns True."""
-		if self.IsConnOpen():
-			self.mongoClient.close()
-			self.mongoClient = False
-			self.mongoDatabase = False
-			self.mongoCollection = False
-		self.ShutdownMongod()
-		return True
-		
-	def ShutdownMongod(self):
-		"""Closes the database. Always returns True."""
-		if not self.IsMongodRunning():
-			return True
-		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), r'admin'], stdin=subprocess.PIPE)
-		mongoShell.communicate(r'db.shutdownServer()')
-		DatabaseController.mongod = False
-		return True
-		
-	def IsMongodRunning(self, strict=False):
-		"""Returns True if the database is running, False if not. If strict=True it will
-		try to connect to the database instead of just checking the class attribute."""
-		if not InputController.IsBool(strict):
-			self.Close()
-			raise Exception("Strict is not a boolean value")
-			
-		if strict:
-			client = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port, connectTimeoutMS=2000, serverSelectionTimeoutMS=3000)
-			try:
-				client.admin.command('ismaster')
-				client.close()
-				return True
-			except:
-				client.close()
-				return False
+				print "Cannot execute .find() in mongoDB"
+				return []
 		else:
-			if DatabaseController.mongod:
-				return True
-			else:
-				return False
-		
-	def Find(self, condition, distinct=False):
-		"""Return a data iterator which fetches documents from a mongo collection which satisfy the condition.
-		Fetched documents follow the pattern {u'key1' : [u'value1'], u'key2' : [value2], ...}.
-		If distinct=True it fetches unique documents. Returns the iterator or False if the connection
-		is closed or if an error occured."""
-		if self.IsConnOpen():
-				try:
-					if distinct:
-						return self.mongoCollection.find(condition).distinct(distinct)
-					else:
-						return self.mongoCollection.find(condition)
-				except:
-					print "Cannot execute .find() in mongoDB"
-					return False
+			print "Collection is not open."
+			return []
+			
+	def FindDistinct(self, condition, column):
+		"""Return a list of unique values in a column. Condition is structured as
+		{'size' : {'$lt' : 500}}, {'priceInEuros' : {'$gt' : 5000}}."""
+		if self._IsCollectionOpen():
+			try:
+				return self.mongoCollection.find(condition).distinct(column)
+			except:
+				print "Cannot execute .find() in mongoDB."
+				return []
 		else:
 			print "Connection is closed."
-			return False
-	
+			return []
+			
 	def Insert(self, entry):
-		"""Insert a new document into the database mongo collection. Returns True if the document was stored
-		or False if the connection is closed or if an error occured."""
-		if self.IsConnOpen():
+		"""Insert a new document into the open collection."""
+		if self._IsCollectionOpen():
 			try:
 				self.mongoCollection.insert(entry)
 				return True
 			except:
+				print "Cannot execute .insert() in mongoDB."
 				return False
+		else:
+			print "Connection is closed."
+			return False
+			
+	def CloseAndStop(self):
+		"""Closes an open connection and closes the database. Always returns True."""
+		self._CloseCollection()
+		self._StopMongod()
+		return True
+		
+	def _CloseCollection(self):
+		"""Close a collection if it is open."""
+		if self._IsCollectionOpen():
+			self.mongoDatabase = False
+			self.mongoCollection = False
+		return True
+	
+	def _IsCollectionOpen(self):
+		"""Checks if a collection is open."""
+		if self.mongoCollection:
+			return True
 		else:
 			return False
 			
-	def IsConnOpen(self):
-		"""Checks if the connection to a mongo collection is open. If it is, returns True,
-		otherwise it return False."""
-		if self.mongoClient:
+	def _StopMongod(self):
+		"""Close the database."""
+		if not self._IsMongodRunning():
+			return True
+		mongoShell = subprocess.Popen([os.path.expanduser(DatabaseConfig.mongoShellPath), r'admin'],
+		                              stdin=subprocess.PIPE)
+		mongoShell.communicate(r'db.shutdownServer()')
+		DatabaseController.mongod = False
+		return True
+		
+	def _IsMongodRunning(self):
+		"""Has mongod been spawned by DatabaseController."""
+		if DatabaseController.mongod:
 			return True
 		else:
+			return False
+	
+	def _IsCollectionInDatabase(self, coll): #not used by any other class func
+		"""Returns True if the collection is in the database."""
+		if not self._IsMongodRunning():
+			raise Exception("Mongod is not running")
+		if not self._IsCollectionPath(coll):
+			return False
+		
+		dbName = coll['database']
+		collName = coll['collection']
+		if dbName in DatabaseController.mongoClient.database_names():
+			database = DatabaseController.mongoClient[dbName]
+			if collName in database.collection_names():
+				return True
+				
+		return False
+		
+	def _IsCanConnect(self): #not used by any other class func
+		"""Attempt to connect to a database."""
+		try:
+			DatabaseController.mongoClient.admin.command('ismaster')
+			return True
+		except:
 			return False
 			
