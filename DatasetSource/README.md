@@ -10,11 +10,14 @@ called [Pymongo](https://docs.mongodb.com/ecosystem/drivers/python/). The system
 
 ### File
 
-File is where all dataset files will be stored. Files with different extensions have different ways of
-organising data within the file.
+File is where all dataset files are stored. Files with different extensions have different ways of organising
+data within the file.
 
 ### DatasetLoader
 
-DatasetLoader is responsible for implementing functions which load data from a specified source, prepare it
-for insertion into a Pandas DataFrame and load it into Pandas DataFrame.
+Responsibilities: .Load() queries different data sources and loads data into a pandas DataFrame. The class loads
+data from different sources, formats data and loads it into a pandas DataFrame.
+
+The class hides implementation details by only exposing a single .Load() method that then searches through
+different data sources.
 

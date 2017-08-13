@@ -7,7 +7,14 @@ from RealEstateValuationSystem.InputControl.InputController import InputControll
 
 import pandas
 
-def LoadFromMongoDB(conn, condition={}):
+def Load(datasetName, condition):
+	if InputController.IsDict(datasetName):
+		return _LoadFromMongoDB(datasetName, condition)
+	#if InputController.IsString(datasetName):
+		#LoadFromJSON(datasetName)
+	return pandas.DataFrame()
+
+def _LoadFromMongoDB(conn, condition):
 	"""Load a dataset from MongoDB. Returns the dataset in a pandas DataFrame."""
 	if not InputController.IsDict(conn):
 		raise Exception("conn isn't a dictionary")
@@ -15,19 +22,20 @@ def LoadFromMongoDB(conn, condition={}):
 		raise Exception("condition isn't a dictionary")
 		
 	db = DatabaseController()
+	db.RunMongod()
 	db.Open(conn)
 	
 	dataset = []
 	iter = db.Find(condition)
 	for doc in iter:
-		doc = ExtractValueFromListInDict(doc)
+		doc = _ExtractValueFromListInDict(doc)
 		dataset.append(doc)
-	db.Close()
+	db.CloseAndStop()
 	
 	dataset = pandas.DataFrame(dataset)
 	return dataset
 	
-def ExtractValueFromListInDict(dict):
+def _ExtractValueFromListInDict(dict):
 	"""Replace the pattern {'key1' : [value1], ...} with {'key1' : value1, ...}. All other values
 	are left as it is. Returns the extracted dictionary."""
 	if not InputController.IsDict(dict):
@@ -40,3 +48,5 @@ def ExtractValueFromListInDict(dict):
 	return dict
 	
 #def LoadFromCSV(filePath):
+
+#def LoadFromJSON(filePath):

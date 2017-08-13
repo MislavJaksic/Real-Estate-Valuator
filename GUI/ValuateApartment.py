@@ -65,16 +65,16 @@ class ValuateApartment(QMainWindow):
 			menu = QComboBox()
 			self.AddDataToDropdownMenu(menu, name)
 			self.allInputDropdownMenus.append(menu)
-		self.db.Close()
+		self.db.CloseAndStop()
 	
 	def AddDataToDropdownMenu(self, menu, name):
 		if name == 'state':
-			data = self.db.Find({}, distinct='state')
+			data = self.db.FindDistinct({}, distinct='state')
 		if name == 'town':
-			data = self.db.Find({'state':self.allInputDropdownMenus[0].currentText()}, distinct='town')
+			data = self.db.FindDistinct({'state':self.allInputDropdownMenus[0].currentText()}, distinct='town')
 			self.allInputDropdownMenus[0].currentIndexChanged[str].connect(self.Change_Town_DropdownMenu)
 		if name == 'place':
-			data = self.db.Find({'town':self.allInputDropdownMenus[1].currentText()}, distinct='place')
+			data = self.db.FindDistinct({'town':self.allInputDropdownMenus[1].currentText()}, distinct='place')
 			self.allInputDropdownMenus[1].currentIndexChanged[str].connect(self.Change_Place_DropdownMenu)
 		if name == 'size':
 			data = [str(number) for number in xrange(5, 449, 1)]
@@ -83,9 +83,9 @@ class ValuateApartment(QMainWindow):
 		if name == 'yearOfLastAdaptation':
 			data = [str(number) for number in xrange(1940, 2018, 1)]
 		if name == 'numberOfRooms':
-			data = self.db.Find({}, distinct='numberOfRooms')
+			data = self.db.FindDistinct({}, distinct='numberOfRooms')
 		if name == 'floor':
-			data = self.db.Find({}, distinct='floor')
+			data = self.db.FindDistinct({}, distinct='floor')
 			data.remove(0)
 		if name == 'numberOfParkingSpaces':
 			data = [str(number) for number in xrange(0, 7, 1)]
@@ -96,8 +96,8 @@ class ValuateApartment(QMainWindow):
 	def Change_Town_DropdownMenu(self, selectedState):
 		db = DatabaseController()
 		db.Open(DatasetConfig.conn)
-		data = db.Find({'state' : selectedState}, distinct='town')
-		db.Close()
+		data = db.FindDistinct({'state' : selectedState}, distinct='town')
+		db.CloseAndStop()
 		
 		NaturalSort(data)
 		menu = self.allInputDropdownMenus[1] #change to a dict so you don't have to remember the position of the dropdown menu
@@ -107,8 +107,8 @@ class ValuateApartment(QMainWindow):
 	def Change_Place_DropdownMenu(self, selectedState):
 		db = DatabaseController()
 		db.Open(DatasetConfig.conn)
-		data = db.Find({'town' : selectedState}, distinct='place')
-		db.Close()
+		data = db.FindDistinct({'town' : selectedState}, distinct='place')
+		db.CloseAndStop()
 		
 		NaturalSort(data)
 		menu = self.allInputDropdownMenus[2]
@@ -185,8 +185,7 @@ class ValuateApartment(QMainWindow):
 		
 
 def NaturalSort( l ):
-	""" Sort the given list in the way that humans expect.
-	"""
+	""" Sort the given list in the way that humans expect."""
 	convert = lambda text: int(text) if text.isdigit() else text
 	alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
 	l.sort( key=alphanum_key )

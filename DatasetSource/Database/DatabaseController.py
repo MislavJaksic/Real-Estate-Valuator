@@ -29,6 +29,7 @@ class DatabaseController(object):
 				DatabaseController.mongod = subprocess.Popen([os.path.expanduser(DatabaseConfig.dbPath), "--dbpath", DatabaseConfig.dataPath],
 															 stdout=subprocess.PIPE)
 			except:
+				self.CloseAndStop()
 				raise Exception("Couldn't start the database! Database path is:" + DatabaseConfig.dbPath + "Data path is:" + DatabaseConfig.dataPath)
 		return True
 		

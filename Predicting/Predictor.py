@@ -25,14 +25,15 @@ def PredictIntervalValue(customerApartment):
 	cutomerApartmentPandas = pandas.DataFrame(customerApartment)
 	
 	dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
-	dataset = pandas.concat([dataset, cutomerApartmentPandas], ignore_index=True)
+	#dataset = pandas.concat([dataset, cutomerApartmentPandas], ignore_index=True)
 	#print dataset.tail()
 	
 	transformer = DatasetTransformer(dataset)
 	transformer.DropColumns(DatasetConfig.dropColumns)
 	
 	TransformationScripts.MakeTransformationsForApartmentForSaleCollection(transformer)
-	
+	transformer.dataset.to_json('Apartment.json')
+	exit()
 	countPlace = int(transformer.dataset['place'][transformer.dataset.place == customerApartment['place'][0]].count())
 	print "place count:",
 	print countPlace
@@ -86,5 +87,5 @@ def PredictIntervalValue(customerApartment):
 	
 	return model.predict(customerApartment)
 	
-#PredictIntervalValue({'town': [u'Brezovica'], 'numberOfParkingSpaces': [0], 'floor': [1], 'state': [u'Grad Zagreb'], 'place': [u'Brezovica'], 'size': [80]})
+PredictIntervalValue({'town': [u'Brezovica'], 'numberOfParkingSpaces': [0], 'floor': [1], 'state': [u'Grad Zagreb'], 'place': [u'Brezovica'], 'size': [80]})
 #PredictIntervalValue({'town': [u'Donji Grad'], 'numberOfParkingSpaces': [1], 'floor': [7], 'state': [u'Grad Zagreb'], 'place': [u'Donji grad'], 'size': [30]})
