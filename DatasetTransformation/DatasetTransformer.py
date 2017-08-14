@@ -4,12 +4,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 from RealEstateValuationSystem.InputControl.InputController import InputController
 
-import pandas
 import numpy
-import seaborn
-import matplotlib.pyplot
-import scipy.stats
-import copy
 
 class DatasetTransformer(object):
 	def __init__(self, pandasDataFrame):
@@ -38,7 +33,7 @@ class DatasetTransformer(object):
 		return True
 	
 	def ReplaceNaNValuesWithNan(self, nanValues):
-		"""Replace nanValues with numpy.nan values. Returns True."""
+		"""Replace nanValues with numpy.nan values."""
 		if not InputController.IsList(nanValues):
 			raise Exception("nanValues should be a list")
 		
@@ -47,8 +42,8 @@ class DatasetTransformer(object):
 		return True
 		
 	def LogTransOnColumn(self, column):
-		"""Applies a netural logarithm to all values in a column. Use to create normality when the
-		skewness is positive (leaning towards left). Returns True."""
+		"""Applies a natural logarithm to all values in a column. Use to create normality when the
+		skewness is positive (leaning towards left)."""
 		self.dataset[column] = numpy.log1p(self.dataset[column])
 		return True
 		
@@ -67,8 +62,8 @@ class DatasetTransformer(object):
 		self.dataset = self.dataset.query(condition)
 		return True
 		
-	def ReplaceValueWithValueInColumn(self, value, replacementValue, column):
-		""""""
-		self.dataset.loc[self.dataset[column] == value, column] = replacementValue
-		return True
+	# def ReplaceValueWithValueInColumn(self, value, replacementValue, column):
+		# """"""
+		# self.dataset.loc[self.dataset[column] == value, column] = replacementValue
+		# return True
 		

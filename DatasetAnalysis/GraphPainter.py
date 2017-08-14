@@ -9,11 +9,9 @@ import numpy
 import seaborn
 import matplotlib.pyplot
 
-
-	
 def DrawCorrelationMatrix(dataset):
-	"""Plots the correlation between columns which pandas considers numerical (use .dtypes to find out).
-	Returns True and displays a graph."""
+	"""Plot the correlation between numeric columns (use .dtypes to find out which columns pandas consider
+	numerical)."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 		
@@ -26,7 +24,7 @@ def DrawCorrelationMatrix(dataset):
 	return True
 	
 def DrawDistributionGraphs(dataset):
-	"""Plots histograms of all numeric columns. Returns True and displays a graph."""
+	"""Plots histograms of all numeric columns."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 	
@@ -38,7 +36,7 @@ def DrawDistributionGraphs(dataset):
 	return True
 	
 def DrawDistributionGraphColumn(dataset, column):
-	"""Draw a column of a single numeric column. Returns True and displays a graph."""
+	"""Draw a column of a single numeric column."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 		
@@ -47,7 +45,7 @@ def DrawDistributionGraphColumn(dataset, column):
 	return True
 	
 def DrawScatterGraphColumn(dataset, columnY, columnX):
-	"""Two variables are plotted against each other on a scatter graph. Returns True and displays a graph."""
+	"""Two variables are plotted against each other on a scatter graph."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 		
@@ -88,3 +86,4 @@ def DrawBoxGraphColumn(dataset, columnY, columnX, sortByMedian=False):
 	matplotlib.pyplot.xticks(rotation=90)
 	seaborn.plt.show()
 	return True
+	

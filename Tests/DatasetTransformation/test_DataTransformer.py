@@ -1,13 +1,12 @@
 from RealEstateValuationSystem.DatasetTransformation.DatasetTransformer import DatasetTransformer
 from RealEstateValuationSystem.DatasetSource import DatasetLoader
 from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollection import DatasetConfig
-
 import pytest
 
 class TestDatasetTransformer(object):
 	@pytest.fixture(scope='class')
 	def TransformerFunc(self):
-		dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
+		dataset = DatasetLoader.Load(DatasetConfig.conn, {})
 		transformer = DatasetTransformer(dataset)
 		return transformer
 		

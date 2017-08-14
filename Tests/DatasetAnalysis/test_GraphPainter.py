@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture(scope='module')
 def DatasetFunc():
-	dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
+	dataset = DatasetLoader.Load(DatasetConfig.conn, {})
 	return dataset
 	
 def test_DrawCorrelationMatrix(DatasetFunc):

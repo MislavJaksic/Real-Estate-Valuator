@@ -10,10 +10,11 @@ Responsibilities: .RunMongod() creates a MongoDB instance, .Inspect() displays t
 returns distinct values from an open collection, .Insert() inserts documents into an open collection,
 .CloseAndStop() closes the MongoDB instance "gently" to make it release it's locks and save data. The class
 makes sure there is only one MongoDB instance running at any time. The class makes sure there is only one
-MongoClient as per [this recommendation](https://api.mongodb.com/python/current/faq.html#how-does-connection-pooling-work-in-pymongo).
+MongoClient as per [this recommendation](https://api.mongodb.com/python/current/faq.html#how-does-connection-pooling-work-in-pymongo). The class uses .CloseAndStop() only when it is about to raise
+an exception.
 
-It is up to the user to use .CloseAndStop() to close the MongoDB instance. The class uses .CloseAndStop() only
-when it is about to raise an exception.
+It is the user's responsibility to invoke .RunMongod() to create a MongoDB instance and to invoke
+.CloseAndStop() to close the MongoDB instance.
 
 All inputs are verified to make sure later statements can process them. Exceptions are raised only when the
 program cannot continue. All methods behave like expected, if .CloseCollection() is invoked and there is not

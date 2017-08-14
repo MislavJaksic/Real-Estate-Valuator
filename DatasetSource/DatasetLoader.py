@@ -8,6 +8,7 @@ from RealEstateValuationSystem.InputControl.InputController import InputControll
 import pandas
 
 def Load(datasetName, condition):
+	"""Queries different dataset loading functions."""
 	if InputController.IsDict(datasetName):
 		return _LoadFromMongoDB(datasetName, condition)
 	#if InputController.IsString(datasetName):
@@ -37,7 +38,7 @@ def _LoadFromMongoDB(conn, condition):
 	
 def _ExtractValueFromListInDict(dict):
 	"""Replace the pattern {'key1' : [value1], ...} with {'key1' : value1, ...}. All other values
-	are left as it is. Returns the extracted dictionary."""
+	are left as they are."""
 	if not InputController.IsDict(dict):
 		raise Exception("Cannot extract values because the parameter isn't a dictionary")
 	
