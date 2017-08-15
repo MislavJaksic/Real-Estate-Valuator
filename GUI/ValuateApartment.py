@@ -60,6 +60,7 @@ class ValuateApartment(QMainWindow):
 	def CreateInputDropdownMenus(self):
 		self.allInputDropdownMenus = []
 		self.db = DatabaseController()
+		self.db.RunMongod()
 		self.db.Open(DatasetConfig.conn)
 		for name in inputLabels:
 			menu = QComboBox()
@@ -69,12 +70,12 @@ class ValuateApartment(QMainWindow):
 	
 	def AddDataToDropdownMenu(self, menu, name):
 		if name == 'state':
-			data = self.db.FindDistinct({}, distinct='state')
+			data = self.db.FindDistinct({}, 'state')
 		if name == 'town':
-			data = self.db.FindDistinct({'state':self.allInputDropdownMenus[0].currentText()}, distinct='town')
+			data = self.db.FindDistinct({'state':self.allInputDropdownMenus[0].currentText()}, 'town')
 			self.allInputDropdownMenus[0].currentIndexChanged[str].connect(self.Change_Town_DropdownMenu)
 		if name == 'place':
-			data = self.db.FindDistinct({'town':self.allInputDropdownMenus[1].currentText()}, distinct='place')
+			data = self.db.FindDistinct({'town':self.allInputDropdownMenus[1].currentText()}, 'place')
 			self.allInputDropdownMenus[1].currentIndexChanged[str].connect(self.Change_Place_DropdownMenu)
 		if name == 'size':
 			data = [str(number) for number in xrange(5, 449, 1)]
@@ -83,9 +84,9 @@ class ValuateApartment(QMainWindow):
 		if name == 'yearOfLastAdaptation':
 			data = [str(number) for number in xrange(1940, 2018, 1)]
 		if name == 'numberOfRooms':
-			data = self.db.FindDistinct({}, distinct='numberOfRooms')
+			data = self.db.FindDistinct({}, 'numberOfRooms')
 		if name == 'floor':
-			data = self.db.FindDistinct({}, distinct='floor')
+			data = self.db.FindDistinct({}, 'floor')
 			data.remove(0)
 		if name == 'numberOfParkingSpaces':
 			data = [str(number) for number in xrange(0, 7, 1)]
@@ -95,8 +96,9 @@ class ValuateApartment(QMainWindow):
 		
 	def Change_Town_DropdownMenu(self, selectedState):
 		db = DatabaseController()
+		db.RunMongod()
 		db.Open(DatasetConfig.conn)
-		data = db.FindDistinct({'state' : selectedState}, distinct='town')
+		data = db.FindDistinct({'state' : selectedState}, 'town')
 		db.CloseAndStop()
 		
 		NaturalSort(data)
@@ -106,8 +108,9 @@ class ValuateApartment(QMainWindow):
 		
 	def Change_Place_DropdownMenu(self, selectedState):
 		db = DatabaseController()
+		db.RunMongod()
 		db.Open(DatasetConfig.conn)
-		data = db.FindDistinct({'town' : selectedState}, distinct='place')
+		data = db.FindDistinct({'town' : selectedState}, 'place')
 		db.CloseAndStop()
 		
 		NaturalSort(data)
@@ -137,8 +140,8 @@ class ValuateApartment(QMainWindow):
 			except:
 				customerData[inputLabels[i]] = [self.allInputDropdownMenus[i].currentText()]
 		print customerData
-		price = Predictor.PredictIntervalValue(customerData)
-		self.allOutputLabels[0].setText(self.allOutputLabels[0].text() + str(price[0]))
+		price = Predictor.PredictApartmentValue(customerData)
+		self.allOutputLabels[0].setText(self.allOutputLabels[0].text() + str(price))
 	
 	def CreateOutputLabels(self):
 		self.allOutputLabels = []

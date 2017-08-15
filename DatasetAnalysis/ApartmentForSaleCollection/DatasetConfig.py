@@ -17,7 +17,8 @@ binaryColumns = [u'hasCargoElevator', u'hasElevator', u'isNewlyBuilt']
 #Used by DatasetAnalyser to mass eliminate columns from the dataset
 dropColumns = [u'energyCertificate', u'hasCargoElevator', u'hasElevator', u'isNewlyBuilt', u'numberOfRooms', u'state',
                u'type', u'sizeOfBalcony', u'sizeOfGarden', u'sizeOfTerrace', u'yearOfConstruction',
-			   u'yearOfLastAdaptation', u'_id', u'adCode', u'adLink', u'adPublishedDate', u'objectCode']
+			   u'yearOfLastAdaptation', u'_id', u'adCode', u'adLink', u'adPublishedDate', u'objectCode',
+			   u'place', u'town']
 
 #-.-.-.-.- #Columns are either categorical, numerical or for utility #-.-.-.-.-
 #Categorical values have strings or similar category values

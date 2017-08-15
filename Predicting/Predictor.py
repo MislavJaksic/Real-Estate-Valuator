@@ -14,64 +14,18 @@ from sklearn.ensemble import GradientBoostingRegressor
 import numpy
 import pandas
 
+placeThreshold = 200
+townThreshold = 200
 
-def PredictIntervalValue(customerApartment):
-	#print customerApartment
-	#print dataset.tail()
-	
-	#insert faux data to prevent it from being dropped or being incomplete
-	customerApartment['priceInEuros'] = [100000]
-	customerApartment['sellerLink'] = [u'/korisnik/']
-	cutomerApartmentPandas = pandas.DataFrame(customerApartment)
-	
-	dataset = DatasetLoader.LoadFromMongoDB(DatasetConfig.conn)
-	#dataset = pandas.concat([dataset, cutomerApartmentPandas], ignore_index=True)
-	#print dataset.tail()
-	
-	transformer = DatasetTransformer(dataset)
-	transformer.DropColumns(DatasetConfig.dropColumns)
-	
-	TransformationScripts.MakeTransformationsForApartmentForSaleCollection(transformer)
-	transformer.dataset.to_json('Apartment.json')
-	exit()
-	countPlace = int(transformer.dataset['place'][transformer.dataset.place == customerApartment['place'][0]].count())
-	print "place count:",
-	print countPlace
-	if countPlace > 200:
-		transformer.KeepRows('place == ' + "'" + customerApartment['place'][0] + "'")
-	else:
-		countTown = int(transformer.dataset['town'][transformer.dataset.place == customerApartment['town'][0]].count())
-		print "town count:",
-		print countTown
-		if countTown > 200:
-			transformer.KeepRows('town == ' + "'" + customerApartment['town'][0] + "'")
-		else:
-			raise Exception("Not enough data!")
-			
-			
-	
-	
-	Y = transformer.dataset['priceInEuros']
-	transformer.DropColumns(['priceInEuros', 'place', 'town'])
-	X = transformer.dataset
-	#pd.get_dummies(XMod)
-	
-	customerApartment = X[-1:]
-	X = X[:-1]
-	Y = Y[:-1]
-	
-	print "Customer data:"
-	print customerApartment
-	print "X:"
-	print X.tail()
-	print "Y:"
-	print Y.tail()
+def PredictApartmentValue(customerApartment):
+	adApartments = LoadApartmentsInTheSameLocation(customerApartment)
+	apartments = JoinCustomerAndAdApartments(customerApartment, adApartments)
+	transformer = TransformApartments(apartments)
+	X, Y, customerApartment = SplitDepAndIndepColumns(transformer)
 	
 	model = GridSearchCV(GradientBoostingRegressor(), scoring='neg_mean_squared_error',
 	                     param_grid={'loss' :('ls', 'huber'), 'learning_rate' : numpy.arange(0.05, 0.21, 0.05),
 						 'n_estimators' : range(70, 111, 10), 'max_depth' : range(2, 4, 1)})
-	#print dataset.head()
-	#print dataset.tail()
 	
 	model.fit(X, Y)
 	print "Predicted interval value:"
@@ -85,7 +39,42 @@ def PredictIntervalValue(customerApartment):
 	print model.scorer_
 	print model.n_splits_
 	
-	return model.predict(customerApartment)
+	price = model.predict(customerApartment)[0]
+	price = numpy.expm1(price)
+	return price
 	
-PredictIntervalValue({'town': [u'Brezovica'], 'numberOfParkingSpaces': [0], 'floor': [1], 'state': [u'Grad Zagreb'], 'place': [u'Brezovica'], 'size': [80]})
-#PredictIntervalValue({'town': [u'Donji Grad'], 'numberOfParkingSpaces': [1], 'floor': [7], 'state': [u'Grad Zagreb'], 'place': [u'Donji grad'], 'size': [30]})
+def LoadApartmentsInTheSameLocation(customerApartment):
+	apartments = DatasetLoader.Load(DatasetConfig.conn, {'place' : customerApartment['place'][0]})
+	count = apartments['place'].count()
+	if count < placeThreshold:
+		apartments = DatasetLoader.Load(DatasetConfig.conn, {'town' : customerApartment['town'][0]})
+		count = apartments['town'].count()
+		if count < townThreshold:
+			return []
+	return apartments
+	
+def JoinCustomerAndAdApartments(customerApartment, adApartments):
+	customerApartment['priceInEuros'] = [100000]
+	customerApartment['sellerLink'] = [u'/korisnik/']
+	customerApartment = pandas.DataFrame(customerApartment)
+	
+	apartments = pandas.concat([adApartments, customerApartment], ignore_index=True)
+	return apartments
+
+def TransformApartments(apartments):
+	transformer = DatasetTransformer(apartments)
+	transformer.DropColumns(DatasetConfig.dropColumns)
+	
+	TransformationScripts.MakeTransformationsForApartmentForSaleCollection(transformer)
+	return transformer
+
+def SplitDepAndIndepColumns(transformer):
+	Y = transformer.dataset['priceInEuros']
+	transformer.DropColumns(['priceInEuros'])
+	X = transformer.dataset
+	
+	customerApartment = X[-1:]
+	X = X[:-1]
+	Y = Y[:-1]
+	return X, Y, customerApartment
+	
