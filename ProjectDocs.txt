@@ -25,7 +25,7 @@ Receive price prediction through a graphical interface.
 
 Architecture
 ------------
-Program organisation - 
+Program organisation - the system id divided into the following parts: DatasetSources, DatasetAnalysis, DatasetTransformation, Graphical User Interface (GUI), 
 Major classes -
 Data design - Data is stored in a database called MongoDB. I'm using a database instead of a .cvs file is beasue I want to learn how to use a database. I chose MongoDB because I've found a driver that allows me to access it through Python. PostgreSQL was considered due to its popularity.
 Business rules -

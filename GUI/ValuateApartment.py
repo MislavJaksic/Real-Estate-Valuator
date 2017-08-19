@@ -28,7 +28,7 @@ checkBoxes = [
 "onlyReliableHouses?", "anotherOption",
 ]
 RESULTS = [
-"number of data points", "model algo", "model mistake", "value of property",
+"value of property",
 ]
 
 class ValuateApartment(QMainWindow):
