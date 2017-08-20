@@ -7,7 +7,7 @@ unavailable to the public.
 
 ### Requirements and functionalities
 
-Scrape real estate data from websites. (optional)
+Scrape real estate data from websites.
 Store data for analysis.
 Deleted data after it has been analysed.
 Load data into data analysis tool.
@@ -28,18 +28,18 @@ Receive price prediction through a graphical interface.
 
 - Program organisation - the system is divided into the following building blocks: DatasetSources, DatasetAnalysis,
 DatasetTransformation, Predicting, Graphical User Interface (GUI), InputControl and Tests.
-    Role - DatasetSources role is to store data in a file or a database as well as to load data for use by other
+  - DatasetSources role is to store data in a file or a database as well as to load data for use by other
 building blocks.
-         - DatasetAnalysis role is to visualize values in a dataset through graphs and count the number of times a
+  - DatasetAnalysis role is to visualize values in a dataset through graphs and count the number of times a
 value occurs.
-         - DatasetTransformation role is to implement commonly used methods for transforming data and to store
+  - DatasetTransformation role is to implement commonly used methods for transforming data and to store
 scripts that will transform the data.
-         - Predicting role is to use machine learning to develop a model that will correctly predict the price of an
+  - Predicting role is to use machine learning to develop a model that will correctly predict the price of an
 apartment.
-         - GUI role is to allow users to interact with the valuation system by letting them input information about
+  - GUI role is to allow users to interact with the valuation system by letting them input information about
 their apartments and displaying the predicted price of the apartment.
-         - InputControl role is to check if the parameter values can be used by the method.
-         - Tests role is to unit test each method and make sure they behave as intended.
+  - InputControl role is to check if the parameter values can be used by the method.
+  - Tests role is to unit test each method and make sure they behave as intended.
 
 - Major classes -
 
@@ -112,6 +112,7 @@ mind and so if a new dataset is added, the system wouldn't have to change in mor
 ### Programming conventions
 
 The naming convention is called CamelCase.
+
 Classes, methods and function have the first letter of each word capitalized. Example: GetAttribute()
 Local variables and parameters have the first letter of each word capitalized except for the first word. Example:
 firstName
