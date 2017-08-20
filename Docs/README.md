@@ -7,34 +7,18 @@ unavailable to the public.
 
 ### Requirements and functionalities
 
-Scrape real estate data from websites.
+Scrape real estate data from websites. Store data for analysis.
 
-Store data for analysis.
+Deleted data after it has been analysed. Load data into data analysis tool.
 
-Deleted data after it has been analysed.
-
-Load data into data analysis tool.
-
-
-Count the number of times a value has occurred in each variable.
-
-Count the number of missing values in each variable.
-
-Draw graphs, distribution, boxes, scatter.
-
+Count the number of times a value has occurred in each variable. Count the number of missing values in each
+variable. Draw graphs, distribution, boxes, scatter.
 
 Transform data based on values.
 
+Construct a prediction model using machine learning. Predict the price of an unknown property.
 
-Construct a prediction model using machine learning.
-
-Predict the price of an unknown property.
-
-
-Specify property data through a graphical interface.
-
-Receive price prediction through a graphical interface.
-
+Specify property data through a graphical interface. Receive price prediction through a graphical interface.
 
 ### Architecture
 
