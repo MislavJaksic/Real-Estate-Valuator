@@ -7,9 +7,9 @@ unavailable to the public.
 
 ### Requirements and functionalities
 
-Scrape real estate data from websites. Store data for analysis.
+Scrape real estate data from websites.
 
-Deleted data after it has been analysed. Load data into data analysis tool.
+Store data for analysis. Deleted data after it has been analysed. Load data into data analysis tool.
 
 Count the number of times a value has occurred in each variable. Count the number of missing values in each
 variable. Draw graphs, distribution, boxes, scatter.
