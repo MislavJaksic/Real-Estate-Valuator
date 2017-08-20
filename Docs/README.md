@@ -8,21 +8,33 @@ unavailable to the public.
 ### Requirements and functionalities
 
 Scrape real estate data from websites.
+
 Store data for analysis.
+
 Deleted data after it has been analysed.
+
 Load data into data analysis tool.
 
+
 Count the number of times a value has occurred in each variable.
+
 Count the number of missing values in each variable.
+
 Draw graphs, distribution, boxes, scatter.
+
 
 Transform data based on values.
 
+
 Construct a prediction model using machine learning.
+
 Predict the price of an unknown property.
 
+
 Specify property data through a graphical interface.
+
 Receive price prediction through a graphical interface.
+
 
 ### Architecture
 
@@ -113,6 +125,7 @@ mind and so if a new dataset is added, the system wouldn't have to change in mor
 
 The naming convention is called CamelCase.
 
-Classes, methods and function have the first letter of each word capitalized. Example: GetAttribute()
+Classes, methods and functions have the first letter of each word capitalized. Example: GetAttribute()
+
 Local variables and parameters have the first letter of each word capitalized except for the first word. Example:
 firstName
