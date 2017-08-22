@@ -7,22 +7,39 @@ unavailable to the public.
 
 ### Requirements and functionalities
 
-Scrape real estate data from websites.
+1) Scrape real estate data from websites.
 
-Store data for analysis. Deleted data after it has been analysed. Load data into data analysis tool.
+2) Store data for analysis.
+3) Deleted data after it has been analysed.
+4) Load data into data analysis tool.
 
-Count the number of times a value has occurred in each variable. Count the number of missing values in each
-variable. Draw graphs, distribution, boxes, scatter.
+5) Count the number of times a value has occurred in each variable.
+6) Count the number of missing values in each variable.
+7) Draw graphs, distribution, boxes, scatter.
 
-Transform data based on values.
+8) Transform data based on values.
 
-Construct a prediction model using machine learning. Predict the price of an unknown property.
+9) Construct a prediction model using machine learning.
+10) Predict the price of an unknown property.
 
-Specify property data through a graphical interface. Receive price prediction through a graphical interface.
+11) Specify property data through a graphical interface.
+12) Receive price prediction through a graphical interface.
 
 ### Architecture
 
-- Program organisation - the system is divided into the following building blocks: DatasetSources, DatasetAnalysis,
+- Program organisation
+
+| Building blocks | Role and responsibility | Covers requirements | Communicates with |
+| -- | -- | -- | -- |
+| DatasetSources | Access data | 2), 4) | Predicting, GUI |
+| DatasetAnalysis | Visualize and count values | 5), 6), 7) | None |
+| DatasetTransformation | Data wrangling | 8) | Predicting |
+| Predicting | Make data model | 9), 10) | DatasetSources, DatasetTransformation |
+| Graphical User Interface (GUI) | Interact with user | 11), 12) | DatasetSources, Predicting |
+| InputControl | Input validation |  | all subsystems |
+| Tests | Prove correctness |  | all subsystems |
+
+- The system is divided into the following building blocks: DatasetSources, DatasetAnalysis,
 DatasetTransformation, Predicting, Graphical User Interface (GUI), InputControl and Tests.
   - DatasetSources role is to store data in a file or a database as well as to load data for use by other
 building blocks.
@@ -37,10 +54,23 @@ their apartments and displaying the predicted price of the apartment.
   - InputControl role is to check if the parameter values can be used by the method.
   - Tests role is to unit test each method and make sure they behave as intended.
 
-- Major classes -
+- Major classes
+
+| Class | Responsibility | Interacts with |
+| -- | -- | -- |
+| DatabaseController | Access database |  |
+| DatasetLoader | Load data |  |
+| Counter | Count values |  |
+| GraphPainter | Visualise values |  |
+| DatasetTransformer | Wrangle data |  |
+| TransformationScripts |  |  |
+| Predictor | Predict value |  |
+| ValuateApartment | Make GUI |  |
+| InputController | Validate input |  |
+| Unit test classes | Test functions |  |
 
 - Data design - Data is stored in a database called MongoDB. The database is used instead of a .cvs file is because
-this project is a perfect time to learn how to use a noSQL database. MongoDB was choosen because it has a driver
+this project is a perfect time to learn how to use a noSQL database. MongoDB was chosen because it has a driver
 called Pymongo that communicates with the database through Python. PostgreSQL was also considered due to its
 popularity, but a scraper library, Scrapy, has a tutorial on how to use it with MongoDB and Pymongo.
 
@@ -94,7 +124,7 @@ for exploring and transforming data in tabular form. seaborn is a library that a
 is a library that facilitates the creation of graphical user interfaces. sklearn implements state of the art machine
 learn algorithms. The rest of the system is written in Python and connects all the libraries.
 
-- Reuse decision - all programs can be reused except for the Predictor and parts of the ValueateApartment programs for
+- Reuse decision - all programs can be reused except for the Predictor and parts of the ValuateApartment programs for
 analysing other datasets. Predictor cannot be reused because it is tailor made for a single dataset as is a part of
 the ValuateApartment.
 
