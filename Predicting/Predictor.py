@@ -19,6 +19,8 @@ townThreshold = 200
 
 def PredictApartmentValue(customerApartment):
 	adApartments = LoadApartmentsInTheSameLocation(customerApartment)
+	if adApartments.empty:
+		return -1
 	apartments = JoinCustomerAndAdApartments(customerApartment, adApartments)
 	transformer = TransformApartments(apartments)
 	X, Y, customerApartment = SplitDepAndIndepColumns(transformer)
@@ -41,6 +43,7 @@ def PredictApartmentValue(customerApartment):
 	
 	price = model.predict(customerApartment)[0]
 	price = numpy.expm1(price)
+	price = int(price)
 	return price
 	
 def LoadApartmentsInTheSameLocation(customerApartment):
@@ -50,7 +53,7 @@ def LoadApartmentsInTheSameLocation(customerApartment):
 		apartments = DatasetLoader.Load(DatasetConfig.conn, {'town' : customerApartment['town'][0]})
 		count = apartments['town'].count()
 		if count < townThreshold:
-			return []
+			return pandas.DataFrame()
 	return apartments
 	
 def JoinCustomerAndAdApartments(customerApartment, adApartments):
