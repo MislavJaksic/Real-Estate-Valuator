@@ -146,3 +146,7 @@ Classes, methods and functions have the first letter of each word capitalized. E
 
 Local variables and parameters have the first letter of each word capitalized except for the first word. Example:
 firstName
+
+Predicate functions, those that return a boolean value True or False, are prefixed with "Is-". Example: IsList()
+
+Private function, those that are not intended to be used as a part of the classes public interface, are prefixed with "_". Example: _PrivateFunc()
