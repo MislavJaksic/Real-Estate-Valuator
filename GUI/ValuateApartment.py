@@ -24,11 +24,11 @@ import re
 
 inputLabels = ['state', 'town', 'place', 'size', 'floor', 'numberOfParkingSpaces']
 
-checkBoxes = [
-"onlyReliableHouses?", "anotherOption",
-]
+# checkBoxes = [
+# "onlyReliableHouses?", "anotherOption",
+# ]
 RESULTS = [
-"value of property",
+"Value of property: ",
 ]
 
 class ValuateApartment(QMainWindow):
