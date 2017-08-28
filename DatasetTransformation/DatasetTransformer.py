@@ -42,13 +42,13 @@ class DatasetTransformer(object):
 		return True
 		
 	def LogTransOnColumn(self, column):
-		"""Applies a natural logarithm to all values in a column. Use to create normality when the
+		"""Apply a natural logarithm to all values in a column. Use to create normality when the
 		skewness is positive (leaning towards left)."""
 		self.dataset[column] = numpy.log1p(self.dataset[column])
 		return True
 		
 	def DropColumns(self, columns):
-		"""Drops columns from the dataset. Use either when there is a lot of missing data or
+		"""Drop columns from the dataset. Use either when there is a lot of missing data or
 		the data is irrelevant."""
 		if not InputController.IsList(columns):
 			raise Exception("columns should be a list")

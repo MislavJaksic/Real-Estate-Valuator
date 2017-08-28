@@ -8,7 +8,7 @@ from RealEstateValuationSystem.InputControl.InputController import InputControll
 import pandas
 
 def Load(datasetName, condition):
-	"""Queries different dataset loading functions."""
+	"""Query different dataset loading functions."""
 	if InputController.IsDict(datasetName):
 		return _LoadFromMongoDB(datasetName, condition)
 	#if InputController.IsString(datasetName):
@@ -16,7 +16,7 @@ def Load(datasetName, condition):
 	return pandas.DataFrame()
 
 def _LoadFromMongoDB(conn, condition):
-	"""Load a dataset from MongoDB. Returns the dataset in a pandas DataFrame."""
+	"""Load a dataset from MongoDB. Return the dataset in a pandas DataFrame."""
 	if not InputController.IsDict(conn):
 		raise Exception("conn isn't a dictionary")
 	if not InputController.IsDict(condition):

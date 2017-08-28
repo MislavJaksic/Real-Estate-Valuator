@@ -83,7 +83,8 @@ class TestDatabaseOff(object):
 		
 	def test_IsCollectionPathF(self, db):
 		notColl = []
-		assert db._IsCollectionPath(notColl) == False
+		with pytest.raises(Exception) as e_info:
+			db._IsCollectionPath(notColl)
 			
 	def test_IsKeyInDictT(self, db):
 		dict = {'hello' : 55}

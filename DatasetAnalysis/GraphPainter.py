@@ -24,7 +24,7 @@ def DrawCorrelationMatrix(dataset):
 	return True
 	
 def DrawDistributionGraphs(dataset):
-	"""Plots histograms of all numeric columns."""
+	"""Plot histograms of all numeric columns."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 	
@@ -55,9 +55,9 @@ def DrawScatterGraphColumn(dataset, columnY, columnX):
 	return True
 	#takes a long time to perform, don't use it
 def DrawBoxGraphs(dataset, columnY):
-	"""Plots box graphs (or box and wiskers plots) againt a column. For comparing a numeric and categoric
+	"""Plot box graphs (or box and wiskers plots) againt a column. For comparing a numeric and categoric
 	variables. The box shows the quartiles of the dataset, dots represent outliers and
-	wiskers show the rest of the distribution. Returns True and displays a graph."""
+	wiskers show the rest of the distribution. Return True and display a graph."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 	
@@ -72,7 +72,7 @@ def DrawBoxGraphs(dataset, columnY):
 	return True
 	
 def DrawBoxGraphColumn(dataset, columnY, columnX, sortByMedian=False):
-	"""Two variables are plotted against each other on a box graph. Returns True and displays a graph."""
+	"""Two variables are plotted against each other on a box graph. Return True and display a graph."""
 	if not InputController.IsDataFrame(dataset):
 		raise Exception("dataset is not a pandas DataFrame")
 		

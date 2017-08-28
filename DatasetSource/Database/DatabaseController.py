@@ -15,12 +15,11 @@ class DatabaseController(object):
     Attributes: mongod stores a mongod.exe process. There can be only one.
                 mongoClient stores an entry point to the database. There can be only one."""
     mongod = False
-    mongoClient = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)#maxIdleTimeMS=3000, socketTimeoutMS=3000, connectTimeoutMS=2000, serverSelectionTimeoutMS=3000, waitQueueTimeoutMS=3000
+    mongoClient = pymongo.MongoClient(host=DatabaseConfig.host, port=DatabaseConfig.port)
     
     def __init__(self):
         self.mongoDatabase = False
         self.mongoCollection = False
-        print "RunMongod(), Inspect(), Open(), Find(), FindDistinct(), Insert(), CloseAndStop()"
     
     def RunMongod(self):
         """Run mongod if it isn't already running."""
@@ -34,8 +33,7 @@ class DatabaseController(object):
         return True
         
     def Inspect(self):
-        """Writes out the names of all mongo databases, collections, document attributes and count.
-        Always returns True."""
+        """Write out the names of all mongo databases, collections, document attributes and count."""
         if not self._IsMongodRunning():
             raise Exception("Mongod is not running")
         
@@ -43,11 +41,9 @@ class DatabaseController(object):
         for name in databaseNames:
             print '\'database\' : ' + name
             database = DatabaseController.mongoClient[name]
-            
             collectionNames = database.collection_names()
             for name in collectionNames:
                 print '----- \'collection\' : ' + name
-                
                 collection = database[name]
                 print '     ----- Count documents: ',
                 print collection.count()
@@ -58,12 +54,10 @@ class DatabaseController(object):
         return True
         
     def Open(self, coll):
-        """Opens a mongo collection. Always returns True."""
+        """Open a mongo collection."""
         if not self._IsMongodRunning():
             raise Exception("Mongod is not running")
-        if not self._IsCollectionPath(coll):
-            self.CloseAndStop()
-            raise Exception("Given an incorrect path to the collection")
+        self._IsCollectionPath(coll)
         
         self._CloseCollection()
         
@@ -72,17 +66,20 @@ class DatabaseController(object):
         return True
         
     def _IsCollectionPath(self, coll):
-        """Is a collection if {'database':'dbName', 'collection':'collName'}. """
+        """Is a collection if {'database':'dbName', 'collection':'collName'}."""
         if not InputController.IsDict(coll):
-            return False
+            self.CloseAndStop()
+            raise Exception("Argument has to be a dictionary of pattern {'database':'dbName', 'collection':'collName'}")
         if not self._IsKeyInDict('database', coll):
-            return False
+            self.CloseAndStop()
+            raise Exception("No key 'database'")
         if not self._IsKeyInDict('collection', coll):
-            return False
+            self.CloseAndStop()
+            raise Exception("No key 'collection'")
         return True
         
     def _IsKeyInDict(self, key, dict):
-        """Key is in dict if a vlue can be extracted."""
+        """Key is in dict if a value can be extracted."""
         exists = dict.get(key)
         if exists == None:
             return False
@@ -96,7 +93,7 @@ class DatabaseController(object):
             try:
                 return self.mongoCollection.find(condition)
             except:
-                print "Cannot execute .find() in mongoDB"
+                print "Pymongo cannot execute .find()."
                 return []
         else:
             print "Collection is not open."
@@ -109,7 +106,7 @@ class DatabaseController(object):
             try:
                 return self.mongoCollection.find(condition).distinct(column)
             except:
-                print "Cannot execute .find() in mongoDB."
+                print "Pymongo cannot execute .find()."
                 return []
         else:
             print "Connection is closed."
@@ -122,14 +119,14 @@ class DatabaseController(object):
                 self.mongoCollection.insert(entry)
                 return True
             except:
-                print "Cannot execute .insert() in mongoDB."
+                print "Pymongo cannot execute .insert()."
                 return False
         else:
             print "Connection is closed."
             return False
             
     def CloseAndStop(self):
-        """Closes an open connection and closes the database. Always returns True."""
+        """Closes an open connection and closes the database."""
         self._CloseCollection()
         self._StopMongod()
         return True
@@ -142,7 +139,7 @@ class DatabaseController(object):
         return True
     
     def _IsCollectionOpen(self):
-        """Checks if a collection is open."""
+        """Check if a collection is open."""
         if self.mongoCollection:
             return True
         else:
@@ -166,7 +163,7 @@ class DatabaseController(object):
             return False
     
     def _IsCollectionInDatabase(self, coll):
-        """Returns True if the collection is in the database."""
+        """Return True if the collection is in the database."""
         if not self._IsMongodRunning():
             raise Exception("Mongod is not running")
         if not self._IsCollectionPath(coll):
