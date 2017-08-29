@@ -28,18 +28,7 @@ def PredictApartmentValue(customerApartment):
 	model = GridSearchCV(GradientBoostingRegressor(), scoring='neg_mean_squared_error',
 	                     param_grid={'loss' :('ls', 'huber'), 'learning_rate' : numpy.arange(0.05, 0.21, 0.05),
 						 'n_estimators' : range(70, 111, 10), 'max_depth' : range(2, 4, 1)})
-	
 	model.fit(X, Y)
-	print "Predicted interval value:"
-	print model.predict(customerApartment)
-	print "!!!-.-.-!!!"
-	#print model.cv_results_ #too long to print
-	print model.best_estimator_
-	print model.best_score_
-	print model.best_params_
-	#print model.best_index_ #not important
-	print model.scorer_
-	print model.n_splits_
 	
 	price = model.predict(customerApartment)[0]
 	price = numpy.expm1(price)

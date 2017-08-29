@@ -2,7 +2,7 @@
 
 ### Problem
 
-In Croatia, real estate evaluation is expensive, takes a long time and is based on data hidden in a database
+In Croatia, real estate valuation is expensive, takes a long time and is based on data hidden in a database
 unavailable to the public.
 
 ### Requirements and functionalities

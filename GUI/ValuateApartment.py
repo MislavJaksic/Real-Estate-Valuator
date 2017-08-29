@@ -23,13 +23,8 @@ from RealEstateValuationSystem.Predicting import Predictor
 import re
 
 inputLabels = ['state', 'town', 'place', 'size', 'floor', 'numberOfParkingSpaces']
-
-# checkBoxes = [
-# "onlyReliableHouses?", "anotherOption",
-# ]
-RESULTS = [
-"Value of property: ",
-]
+checkBoxes = []
+RESULTS = ["Value of property: "]
 
 class ValuateApartment(QMainWindow):
 	
@@ -128,10 +123,10 @@ class ValuateApartment(QMainWindow):
 		self.valuateButton.clicked.connect(self.Valuate)
 	
 	def Valuate(self):
-		for dropdownMenu in self.allInputDropdownMenus:
-			print dropdownMenu.currentText()
-		for checkBox in self.allOptionCheckBoxes:
-			print checkBox.checkState()
+		# for dropdownMenu in self.allInputDropdownMenus:
+			# print dropdownMenu.currentText()
+		# for checkBox in self.allOptionCheckBoxes:
+			# print checkBox.checkState()
 		
 		customerData = {}
 		for i in range(0, len(inputLabels)):
@@ -139,9 +134,9 @@ class ValuateApartment(QMainWindow):
 				customerData[inputLabels[i]] = [int(self.allInputDropdownMenus[i].currentText())]
 			except:
 				customerData[inputLabels[i]] = [self.allInputDropdownMenus[i].currentText()]
-		print customerData
+		# print customerData
 		price = Predictor.PredictApartmentValue(customerData)
-		self.allOutputLabels[0].setText(self.allOutputLabels[0].text() + str(price))
+		self.allOutputLabels[0].setText(RESULTS[0] + str(price) + ' euros')
 	
 	def CreateOutputLabels(self):
 		self.allOutputLabels = []
