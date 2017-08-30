@@ -123,18 +123,12 @@ class ValuateApartment(QMainWindow):
 		self.valuateButton.clicked.connect(self.Valuate)
 	
 	def Valuate(self):
-		# for dropdownMenu in self.allInputDropdownMenus:
-			# print dropdownMenu.currentText()
-		# for checkBox in self.allOptionCheckBoxes:
-			# print checkBox.checkState()
-		
 		customerData = {}
 		for i in range(0, len(inputLabels)):
 			try:
 				customerData[inputLabels[i]] = [int(self.allInputDropdownMenus[i].currentText())]
 			except:
 				customerData[inputLabels[i]] = [self.allInputDropdownMenus[i].currentText()]
-		# print customerData
 		price = Predictor.PredictApartmentValue(customerData)
 		self.allOutputLabels[0].setText(RESULTS[0] + str(price) + ' euros')
 	
