@@ -2,8 +2,6 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../..'))
 
-from RealEstateValuationSystem.DatasetAnalysis.ApartmentForSaleCollection import DatasetConfig
-
 import numpy
 
 def MakeTransformationsForApartmentForSaleCollection(transformer):
