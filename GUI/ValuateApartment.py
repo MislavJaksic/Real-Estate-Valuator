@@ -30,48 +30,48 @@ class ValuateApartment(QMainWindow):
 	
 	def __init__(self):
 		super(ValuateApartment, self).__init__()
-		self.CreateInterface()
+		self._CreateInterface()
 	
-	def CreateInterface(self):
-		self.CreateGUIElements()
-		self.PositionGUIElements()
+	def _CreateInterface(self):
+		self._CreateGUIElements()
+		self._PositionGUIElements()
 		
-		self.setWindowTitle("Valuate Apartment")
+		self.setWindowTitle("_Valuate Apartment")
 		
 		self.show()
 		
-	def CreateGUIElements(self):
-		self.CreateInputLabels()
-		self.CreateInputDropdownMenus()
-		self.CreateCheckBoxes()
-		self.CreateValuateButton()
-		self.CreateOutputLabels()
+	def _CreateGUIElements(self):
+		self._CreateInputLabels()
+		self._CreateInputDropdownMenus()
+		self._CreateCheckBoxes()
+		self._Create_ValuateButton()
+		self._CreateOutputLabels()
 		
-	def CreateInputLabels(self):
+	def _CreateInputLabels(self):
 		self.allInputLabels = []
 		for name in inputLabels:
 			self.allInputLabels.append(QLabel(name))
 	
-	def CreateInputDropdownMenus(self):
+	def _CreateInputDropdownMenus(self):
 		self.allInputDropdownMenus = []
 		self.db = DatabaseController()
 		self.db.RunMongod()
 		self.db.Open(DatasetConfig.conn)
 		for name in inputLabels:
 			menu = QComboBox()
-			self.AddDataToDropdownMenu(menu, name)
+			self._AddDataToDropdownMenu(menu, name)
 			self.allInputDropdownMenus.append(menu)
 		self.db.CloseAndStop()
 	
-	def AddDataToDropdownMenu(self, menu, name):
+	def _AddDataToDropdownMenu(self, menu, name):
 		if name == 'state':
 			data = self.db.FindDistinct({}, 'state')
 		if name == 'town':
 			data = self.db.FindDistinct({'state':self.allInputDropdownMenus[0].currentText()}, 'town')
-			self.allInputDropdownMenus[0].currentIndexChanged[str].connect(self.Change_Town_DropdownMenu)
+			self.allInputDropdownMenus[0].currentIndexChanged[str].connect(self._Change_Town_DropdownMenu)
 		if name == 'place':
 			data = self.db.FindDistinct({'town':self.allInputDropdownMenus[1].currentText()}, 'place')
-			self.allInputDropdownMenus[1].currentIndexChanged[str].connect(self.Change_Place_DropdownMenu)
+			self.allInputDropdownMenus[1].currentIndexChanged[str].connect(self._Change_Place_DropdownMenu)
 		if name == 'size':
 			data = [str(number) for number in xrange(5, 449, 1)]
 		if name == 'yearOfConstruction':
@@ -86,43 +86,43 @@ class ValuateApartment(QMainWindow):
 		if name == 'numberOfParkingSpaces':
 			data = [str(number) for number in xrange(0, 7, 1)]
 		
-		NaturalSort(data)
+		_NaturalSort(data)
 		menu.addItems(data)
 		
-	def Change_Town_DropdownMenu(self, selectedState):
+	def _Change_Town_DropdownMenu(self, selectedState):
 		db = DatabaseController()
 		db.RunMongod()
 		db.Open(DatasetConfig.conn)
 		data = db.FindDistinct({'state' : selectedState}, 'town')
 		db.CloseAndStop()
 		
-		NaturalSort(data)
+		_NaturalSort(data)
 		menu = self.allInputDropdownMenus[1] #change to a dict so you don't have to remember the position of the dropdown menu
 		menu.clear()
 		menu.addItems(data)
 		
-	def Change_Place_DropdownMenu(self, selectedState):
+	def _Change_Place_DropdownMenu(self, selectedState):
 		db = DatabaseController()
 		db.RunMongod()
 		db.Open(DatasetConfig.conn)
 		data = db.FindDistinct({'town' : selectedState}, 'place')
 		db.CloseAndStop()
 		
-		NaturalSort(data)
+		_NaturalSort(data)
 		menu = self.allInputDropdownMenus[2]
 		menu.clear()
 		menu.addItems(data)
 	
-	def CreateCheckBoxes(self):
+	def _CreateCheckBoxes(self):
 		self.allOptionCheckBoxes = []
 		for name in checkBoxes:
 			self.allOptionCheckBoxes.append(QCheckBox(name))
 	
-	def CreateValuateButton(self):
-		self.valuateButton = QPushButton('Valuate apartment')
-		self.valuateButton.clicked.connect(self.Valuate)
+	def _Create_ValuateButton(self):
+		self._ValuateButton = QPushButton('_Valuate apartment')
+		self._ValuateButton.clicked.connect(self._Valuate)
 	
-	def Valuate(self):
+	def _Valuate(self):
 		customerData = {}
 		for i in range(0, len(inputLabels)):
 			try:
@@ -132,7 +132,7 @@ class ValuateApartment(QMainWindow):
 		price = Predictor.PredictApartmentValue(customerData)
 		self.allOutputLabels[0].setText(RESULTS[0] + str(price) + ' euros')
 	
-	def CreateOutputLabels(self):
+	def _CreateOutputLabels(self):
 		self.allOutputLabels = []
 		for name in RESULTS:
 			self.allOutputLabels.append(QLabel(name))
@@ -141,21 +141,21 @@ class ValuateApartment(QMainWindow):
 	#Interface design: 
 	#the first column has labels and dropdown menus paired up and below them are check boxes
 	#	customers input data through the dropdown menus and choose additional options through the check boxes
-	#the second column has a valuate button
+	#the second column has a _Valuate button
 	#	customers will begin the valuation process by pressing it
 	# the third column will display the results of the valuation
-	def PositionGUIElements(self):
-		self.CreateLayouts()
-		self.AddElementsToLayoutAndNestLayouts()
-		self.AddLayoutToCentralWidget()
+	def _PositionGUIElements(self):
+		self._CreateLayouts()
+		self._AddElementsToLayoutAndNestLayouts()
+		self._AddLayoutToCentralWidget()
 	
-	def CreateLayouts(self):
+	def _CreateLayouts(self):
 		self.horizontalStripLayout = QHBoxLayout()
 		self.firstColumnLayout = QVBoxLayout()
 		self.thirdColumnLayout = QVBoxLayout()
 		self.inputLabelAndDropdownMenuPairLayout = QFormLayout()
 	
-	def AddElementsToLayoutAndNestLayouts(self):
+	def _AddElementsToLayoutAndNestLayouts(self):
 		for i in range(len(inputLabels)):
 			self.inputLabelAndDropdownMenuPairLayout.addRow(self.allInputLabels[i], self.allInputDropdownMenus[i])
 		
@@ -167,16 +167,16 @@ class ValuateApartment(QMainWindow):
 			self.thirdColumnLayout.addWidget(self.allOutputLabels[i])
 		
 		self.horizontalStripLayout.addLayout(self.firstColumnLayout)
-		self.horizontalStripLayout.addWidget(self.valuateButton)
+		self.horizontalStripLayout.addWidget(self._ValuateButton)
 		self.horizontalStripLayout.addLayout(self.thirdColumnLayout)
 	
-	def AddLayoutToCentralWidget(self):
+	def _AddLayoutToCentralWidget(self):
 		widget = QWidget()
 		widget.setLayout(self.horizontalStripLayout)
 		self.setCentralWidget(widget)
 		
 
-def NaturalSort(list):
+def _NaturalSort(list):
 	""" Sort the given list in the way that humans expect."""
 	convert = lambda text: int(text) if text.isdigit() else text
 	alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
