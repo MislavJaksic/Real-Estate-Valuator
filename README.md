@@ -1,7 +1,7 @@
 ## Real Estate Valuation System
 
 
-Did you ever wonder for how much money could you sell your house? But how are you going to determine the price? The Real Estate Valuation System takes important property characteristics as input and outputs the value the property based on publicly available data.
+Did you ever wonder for how much money you could sell your house? But how are you going to determine the price? The Real Estate Valuation System takes important property characteristics as input and outputs the value the property based on publicly available data gathered from advertisement websites.
 
 The system is designed to valuate any type of property, but only the valuation of apartments is currently implemented.
 
