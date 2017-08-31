@@ -40,7 +40,7 @@ building blocks.
 value occurs.
     - DatasetTransformation role is to implement commonly used methods for transforming data and to store
 scripts that will transform the data.
-   - Predicting role is to use machine learning to develop a model that will correctly predict the price of an
+    - Predicting role is to use machine learning to develop a model that will correctly predict the price of an
 apartment.
     - GUI role is to allow users to interact with the valuation system by letting them input information about
 their apartments and displaying the predicted price of the apartment.
