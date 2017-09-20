@@ -1,13 +1,3 @@
-#PyQt references(no explainations): http://pyqt.sourceforge.net/Docs/PyQt5/
-
-#General: http://doc.qt.io/qt-5.6/index.html
-
-#Examples: http://doc.qt.io/qt-5.6/qtexamplesandtutorials.html
-#Great example: https://pythonprogramming.net/drop-down-button-window-styles-pyqt-tutorial/
-#Video example: https://pythonschool.net/pyqt/switching-layouts/
-
-#Basic, most useful modules: http://doc.qt.io/qt-5.6/qtmodules.html
-
 from PyQt5.QtWidgets import QComboBox, QWidget, QLabel, QComboBox, QPushButton, QCheckBox
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWidgets import QFormLayout, QHBoxLayout, QVBoxLayout

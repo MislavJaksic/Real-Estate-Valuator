@@ -46,5 +46,5 @@ FplaceTTown = {'town': [u'Pe\u0161\u010denica - \u017ditnjak'], 'numberOfParking
 	
 def test_PredictApartmentValue():
 	value = Predictor.PredictApartmentValue(FplaceTTown)
-	assert ((value > 70000) and (value < 72500)) == True
+	assert ((value > 68000) and (value < 72500)) == True
 		
