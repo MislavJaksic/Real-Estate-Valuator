@@ -6,7 +6,7 @@ from RealEstateValuationSystem.InputControl.InputController import InputControll
 
 import pandas
 
-def CountValues(dataset, dontCountColumns):
+def CountValues(dataset, dontCountColumns=[]):
 	"""Counts the number of times a value occures in a column. Outputs the count to a .csv file in the
 	same folder where this program is located."""
 	if not InputController.IsDataFrame(dataset):
