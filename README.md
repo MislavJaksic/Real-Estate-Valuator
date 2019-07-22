@@ -1,14 +1,23 @@
+<p align="center">
+  <img width="300" src="images/house_price.jpg" alt="House and price graphic"></a>
+</p>
+
 ## Real Estate Valuation System
 
-Did you ever wonder for how much money you could sell your house? But how are you going to determine the price? The Real Estate Valuation System takes important property characteristics as input and outputs the value the property based on collected data.
+Even wonder how they appraise your house? How much is your property real worth?  
 
-The system is designed to valuate any type of property, anywhere on the planet, but only the valuation of apartments in Croatia based on publicly available data gathered from advertisement websites is currently implemented.
+Input your property characteristics and REVS will output a value based on current and historic data.  
 
-Example:
-- Run ValuateApartment.py in the GUI folder
-- Input your apartment characteristics and click Valuate apartment button
-- Wait until the system outputs the Value of property
+The system is designed for any kind of valuation, however this project is mostly concerned with valuating property in Croatia.
 
-Design notes:
-- General design considerations can be found in the Docs folder
-- Each folder has their own README which talks about design and class responsibility
+### Background
+
+I told my undergraduate mentor I wanted to develop a real estate valuation system that could scrape and analyze the housing market data. He approved it as my capstone project.
+
+Because Croatia's property transactions are not public, I had to scrape ads and assume that they accurately represent the housing market.
+
+The data is made 'tidy' before it is stored in a database. When the user wants to evaluate or purchase a property they can use the appropriate interface.
+
+### Current state
+
+In need of a rewrite.
